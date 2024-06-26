@@ -17,17 +17,20 @@ class Player:
         self.y = 1050
 
     def update(self, action):
+        moveY = action["keys"][0]
+        moveX = action["keys"][1]
+
         dx = 0
         dy = 0
         
-        if action[0] == 0: #S
+        if moveY == 0: #S
             dy += Player.SPEED
-        elif action[0] == 2: # W
+        elif moveY == 2: # W
             dy -= Player.SPEED
 
-        if action[1] == 0: # A
+        if moveX == 0: # A
             dx -= Player.SPEED
-        elif action[1] == 2: # D
+        elif moveX == 2: # D
             dx += Player.SPEED
 
         self.y += dy

@@ -5,17 +5,18 @@ from stable_baselines3.common.vec_env import DummyVecEnv, VecFrameStack
 
 from keyboard import is_pressed
 
+manual = True
+
 model_path = os.path.abspath(os.path.join("Training", "SavedModels", "A"))
 #model_path = os.path.abspath(os.path.join("Models", "PPO1"))
 
 env = BlocktanksEnv(render=True,seed=2)
+
 #env = DummyVecEnv([ lambda: env ])
 #env = VecFrameStack(env, 4, channels_order='last')
 model = PPO.load(model_path)
 
 episodes = 5
-
-manual = False
 
 import cv2
 

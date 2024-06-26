@@ -16,6 +16,9 @@ class Map:
 
     def update(self):
         pass
+
+    def getTileRect(self, r, c):
+        return pygame.Rect(c*Map.TILE_SIZE, r*Map.TILE_SIZE, Map.TILE_SIZE, Map.TILE_SIZE)
     
     def draw(self, surface, cameraPos):
     

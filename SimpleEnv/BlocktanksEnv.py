@@ -1,9 +1,10 @@
 from gym import Env
-from gym.spaces import MultiDiscrete, Box
+from gym.spaces import MultiDiscrete, Box, Dict
 import numpy as np
 import math, random
 
 from .Bullet import Bullet
+from .Target import Target
 from .Map import Map
 from .Player import Player
 
@@ -21,6 +22,8 @@ pygame.init()
 bg = pygame.image.load("grid.png")
 
 class BlocktanksEnv(Env):
+    FPS = 10
+
     RED = (232,50,41)
     FADED_RED = (234,140,139)
     BLUE = (66, 85, 210)
@@ -40,13 +43,15 @@ class BlocktanksEnv(Env):
 
     BULLET_SPAWN_SPEED = 10#30#15#10
 
+    TARGET_SPAWN_SPEED = 1
+
     instances = 0
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs): 
         BlocktanksEnv.instances += 1
         print(BlocktanksEnv.instances)
         
-        self.action_space = MultiDiscrete([3, 3])
+        self.action_space = Dict({ "keys": MultiDiscrete([3, 3]), "angle": Box(0, 255, (1), np.uint8) })
         self.observation_space = Box(0, 255, (165, 316, 3), np.uint8)
 
         #self.n_steps = kwargs.get("n_steps", None)
@@ -77,6 +82,9 @@ class BlocktanksEnv(Env):
 
         self.bullets = []
         self.spawnBulletCooldown = 5
+
+        self.targets = []
+        self.spawnTargetCooldown = 5
 
         self.obs_frames = deque([ np.zeros((316, 165)), np.zeros((316, 165)), np.zeros((316, 165)) ], maxlen=3)
         #self.obs_frames = deque([ np.zeros(BlocktanksEnv.WINDOW_SIZE), np.zeros(BlocktanksEnv.WINDOW_SIZE), np.zeros(BlocktanksEnv.WINDOW_SIZE) ], maxlen=3)
@@ -109,22 +117,19 @@ class BlocktanksEnv(Env):
         if self.spawnBulletCooldown < 0:
             self.spawnBulletCooldown = BlocktanksEnv.BULLET_SPAWN_SPEED - round(min(self.timeSteps/1000, 1) * 7)
 
-            self.bullets.append(Bullet.spawnRandomBullet((self.player.x, self.player.y), 200, 250, math.pi/4, self.map))
+            self.bullets.append(Bullet.spawnRandomBullet((self.player.x, self.player.y), 200, 250, math.pi/4, "red", self.map))
 
-            '''
-            self.bullets.append(Bullet.spawnTargettedBullet(
-                (self.x, self.y), 
-                ((action[1]-1) * BlocktanksEnv.SPEED, -(action[0]-1) * BlocktanksEnv.SPEED), 
-                350, 400
-            ))'''
+
+        for target in self.targets:
+            target.update()
+
+        self.spawnTargetCooldown -= 1
+        if self.spawnTargetCooldown < 0:
+            self.spawnTargetCooldown = BlocktanksEnv.TARGET_SPAWN_SPEED
             
-            '''
-            self.bullets.append(Bullet.spawnTargettedBullet(
-                (self.x, self.y), 
-                ((action[1]-1) * BlocktanksEnv.SPEED, -(action[0]-1) * BlocktanksEnv.SPEED), 
-                450, 500, self.map
-                #450, 450
-            ))'''
+            self.targets.append(Target.spawnRandomTarget((self.player.x, self.player.y), 200, 250, self.map))
+
+
 
         cameraPos = (self.player.x - BlocktanksEnv.WINDOW_SIZE[0]/2, self.player.y - BlocktanksEnv.WINDOW_SIZE[1]/2)
 
@@ -137,6 +142,10 @@ class BlocktanksEnv(Env):
 
         for bullet in self.bullets:
             bullet.draw(self.window_surface, cameraPos)
+
+        for target in self.targets:
+            target.draw(self.window_surface, cameraPos)
+
 
         colliding = False
 
