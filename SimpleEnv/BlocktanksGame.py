@@ -1,6 +1,3 @@
-from gym import Env
-from gym.spaces import MultiDiscrete, Box, Dict
-import numpy as np
 import math, random
 
 from .Bullet import Bullet
@@ -8,21 +5,17 @@ from .Target import Target
 from .Map import Map
 from .Player import Player
 
-from collections import deque
-
 import os
 
 import sys
-
-import cv2
 
 import pygame
 pygame.init()
 
 bg = pygame.image.load("grid.png")
 
-class BlocktanksEnv(Env):
-    FPS = 10
+class BlocktanksGame:
+    FPS = 10 # used if render is enabled
 
     RED = (232,50,41)
     FADED_RED = (234,140,139)
@@ -36,26 +29,13 @@ class BlocktanksEnv(Env):
     KILL_RED = (255, 26, 0)
     DEATH_BLUE = (56, 0, 255)
 
-    DEATH_PENALTY = 0#600
-    ALIVE_REWARD = 1
-
     WINDOW_SIZE = (316*5, 165*5)
 
     BULLET_SPAWN_SPEED = 10#30#15#10
 
     TARGET_SPAWN_SPEED = 1
 
-    instances = 0
-
     def __init__(self, **kwargs): 
-        BlocktanksEnv.instances += 1
-        print(BlocktanksEnv.instances)
-        
-        self.action_space = Dict({ "keys": MultiDiscrete([3, 3]), "angle": Box(0, 255, (1), np.uint8) })
-        self.observation_space = Box(0, 255, (165, 316, 3), np.uint8)
-
-        #self.n_steps = kwargs.get("n_steps", None)
-
         self.doRender = kwargs.get("render", False)
         self._seed = kwargs.get("seed", 69)
 
@@ -63,18 +43,18 @@ class BlocktanksEnv(Env):
 
         if self.doRender:
             self.clock = pygame.time.Clock()
-            self.window_surface = pygame.display.set_mode(BlocktanksEnv.WINDOW_SIZE)
+            self.window_surface = pygame.display.set_mode(BlocktanksGame.WINDOW_SIZE)
         else:
-            self.window_surface = pygame.Surface(BlocktanksEnv.WINDOW_SIZE)
+            self.window_surface = pygame.Surface(BlocktanksGame.WINDOW_SIZE)
 
-        self.background = pygame.Surface(BlocktanksEnv.WINDOW_SIZE)
+        self.background = pygame.Surface(BlocktanksGame.WINDOW_SIZE)
         self.background.fill(pygame.Color('#ffffff'))
         #self.background.fill(pygame.Color('#000000'))
 
         self.map = Map.fromFile(os.path.join(os.path.dirname(__file__), "map.map"))
 
-    def reset(self):
-        random.seed(self._seed)
+    def reset(self, seed=None):
+        random.seed(seed or self._seed)
 
         self.timeSteps = 0
 
@@ -86,26 +66,18 @@ class BlocktanksEnv(Env):
         self.targets = []
         self.spawnTargetCooldown = 5
 
-        self.obs_frames = deque([ np.zeros((316, 165)), np.zeros((316, 165)), np.zeros((316, 165)) ], maxlen=3)
-        #self.obs_frames = deque([ np.zeros(BlocktanksEnv.WINDOW_SIZE), np.zeros(BlocktanksEnv.WINDOW_SIZE), np.zeros(BlocktanksEnv.WINDOW_SIZE) ], maxlen=3)
-        self.past_positions = deque([(0,0), (0,0), (0,0)], maxlen=3)
-
-        return self.get_obs()
-
-    def step(self, action):
+    def step(self, inputs):
         if self.doRender:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
 
             pygame.display.flip()
-            
-            cv2.imshow("AI View", self.get_obs())
             self.clock.tick(10)
 
         self.timeSteps += 1
 
-        self.player.update(action)
+        self.player.update(inputs)
     
 
         for bullet in self.bullets:
@@ -115,7 +87,7 @@ class BlocktanksEnv(Env):
 
         self.spawnBulletCooldown -= 1
         if self.spawnBulletCooldown < 0:
-            self.spawnBulletCooldown = BlocktanksEnv.BULLET_SPAWN_SPEED - round(min(self.timeSteps/1000, 1) * 7)
+            self.spawnBulletCooldown = BlocktanksGame.BULLET_SPAWN_SPEED - round(min(self.timeSteps/1000, 1) * 7)
 
             self.bullets.append(Bullet.spawnRandomBullet((self.player.x, self.player.y), 200, 250, math.pi/4, "red", self.map))
 
@@ -125,13 +97,13 @@ class BlocktanksEnv(Env):
 
         self.spawnTargetCooldown -= 1
         if self.spawnTargetCooldown < 0:
-            self.spawnTargetCooldown = BlocktanksEnv.TARGET_SPAWN_SPEED
+            self.spawnTargetCooldown = BlocktanksGame.TARGET_SPAWN_SPEED
             
             self.targets.append(Target.spawnRandomTarget((self.player.x, self.player.y), 200, 250, self.map))
 
 
 
-        cameraPos = (self.player.x - BlocktanksEnv.WINDOW_SIZE[0]/2, self.player.y - BlocktanksEnv.WINDOW_SIZE[1]/2)
+        cameraPos = (self.player.x - BlocktanksGame.WINDOW_SIZE[0]/2, self.player.y - BlocktanksGame.WINDOW_SIZE[1]/2)
 
         self.window_surface.blit(self.background, (0, 0))
         #self.window_surface.blit(bg, (-500 - cameraPos[0], -500 - cameraPos[1]))
@@ -158,59 +130,16 @@ class BlocktanksEnv(Env):
                 colliding = True
                 break
 
-        imageData = self.get_obs_frame()
-        self.obs_frames.append(imageData)
-        self.past_positions.append((self.player.x, self.player.y))
-        curObs = self.get_obs()
             
         if colliding:
-            return curObs, -BlocktanksEnv.DEATH_PENALTY, True, {} 
+            return self.window_surface, { "DEATH" }
 
-        return curObs, BlocktanksEnv.ALIVE_REWARD, False, {}
+        return self.window_surface, { }
 
     def render(self):
         pass
-        #print(f"{self.x} {self.y} {self.x - abs(self.y)}")
-        #self.clock.tick(10)
 
-    def get_obs_frame(self): # no way of knowing past actions, which skew past frames
-        img_data = pygame.surfarray.array3d(self.window_surface)
-
-        # 5x downscale
-        img_data = img_data[::5, ::5]
-
-        # to grayscale
-        img_data = np.dot(img_data[...,:3], [0.299, 0.587, 0.114])
-
-        return img_data
-
-    def get_obs(self):
-        curPos = self.past_positions[len(self.past_positions) - 1]
-        adjustedFrames = []
-
-        for obs, pos in zip(list(self.obs_frames)[:-1], list(self.past_positions)[:-1]):
-            dx = round((pos[0] - curPos[0]) / 5)
-            dy = round((pos[1] - curPos[1]) / 5)
-
-            adjustedObs = np.roll(obs, (dx, dy), (0, 1))
-            if dx > 0:   adjustedObs[:dx, :] = 0#255
-            elif dx < 0: adjustedObs[dx:, :] = 0#255
-
-            if dy > 0:   adjustedObs[:, :dy] = 0#255
-            elif dy < 0: adjustedObs[:, dy:] = 0#255
-
-            adjustedFrames.append(adjustedObs)
-
-        adjustedFrames.append(self.obs_frames[-1])
-
-        img_data = np.asarray(adjustedFrames, dtype=np.uint8).swapaxes(0,2)#.swapaxes(0,1)
-        #img_data = np.asarray(self.obs_frames, dtype=np.uint8).swapaxes(0,2)#.swapaxes(0,1)
-       
-        return img_data
-
-        #return np.asarray([np.ones((316, 165))*0,np.ones((316, 165))*0,np.ones((316, 165))*255]).swapaxes(0,2)
-
-def circleRect(cx, cy, radius, rx, ry, rw, rh):
+def circleRect(cx:float, cy:float, radius:float, rx:float, ry:float, rw:float, rh:float):
 
   # temporary variables to set edges for testing
   testX = cx

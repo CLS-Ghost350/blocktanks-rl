@@ -1,2 +1,2 @@
-Models/
-Training/SavedModels
+Training/SavedModels/*
+venv

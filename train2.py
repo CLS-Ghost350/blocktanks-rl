@@ -1,5 +1,5 @@
 import os
-from SimpleEnv.BlocktanksEnv import BlocktanksEnv
+from SimpleEnv.BlocktanksGame import BlocktanksEnv
 from stable_baselines3 import PPO
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 from stable_baselines3.common.evaluation import evaluate_policy

@@ -5,13 +5,13 @@ class Map:
     COLOR = (180,180,180)
 
     @classmethod
-    def fromFile(cls, filepath):
+    def fromFile(cls, filepath:str):
         with open(filepath, "r") as f:
             tiles = [ list(line) for line in f.readlines() ]
 
         return cls(tiles)
 
-    def __init__(self, tiles): 
+    def __init__(self, tiles:list): 
         self.tiles = tiles
 
     def update(self):
