@@ -5,6 +5,8 @@ from .Target import Target
 from .Map import Map
 from .Player import Player
 
+from .constants import Colors
+
 import os
 
 import sys
@@ -16,18 +18,6 @@ bg = pygame.image.load("grid.png")
 
 class BlocktanksGame:
     FPS = 10 # used if render is enabled
-
-    RED = (232,50,41)
-    FADED_RED = (234,140,139)
-    BLUE = (66, 85, 210)
-    FADED_BLUE = (160, 168, 199)
-    WALL_GREY = (180,180,180)
-    
-    AD_BORDER_BLACK = (0, 0, 0)
-    RESPAWN_GREY = (221, 221, 221)
-    COUNTDOWN_GREY = (68, 68, 68)
-    KILL_RED = (255, 26, 0)
-    DEATH_BLUE = (56, 0, 255)
 
     WINDOW_SIZE = (316*5, 165*5)
 
@@ -94,7 +84,6 @@ class BlocktanksGame:
 
             self.bullets.append(Bullet.spawnRandomBullet((self.player.x, self.player.y), 200, 250, math.pi/4, "red", self.map))
 
-
         for target in self.targets:
             target.update()
 
@@ -111,7 +100,7 @@ class BlocktanksGame:
 
             if self.player.isShooting == 1:
                 print(self.player.angle)
-                self.bullets.append(Bullet.spawnPlayerBullet((self.player.x, self.player.y), self.player.angle, "blue", self.map)) 
+                self.bullets.append(Bullet(self.player.x, self.player.y, inputs["angle"], "blue", self.map))
 
         cameraPos = (self.player.x - BlocktanksGame.WINDOW_SIZE[0]/2, self.player.y - BlocktanksGame.WINDOW_SIZE[1]/2)
 
@@ -133,6 +122,7 @@ class BlocktanksGame:
 
         for bullet in self.bullets:
             if (bullet.team == "blue"): continue
+
             if circleRect(bullet.x, bullet.y, Bullet.RADIUS, 
                 self.player.x - Player.SIZE/2, self.player.y - Player.SIZE/2,
                 Player.SIZE, Player.SIZE):

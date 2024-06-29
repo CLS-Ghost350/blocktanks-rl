@@ -4,6 +4,8 @@ import pygame
 from .Player import Player
 from .Map import Map
 
+from .constants import Colors
+
 class Target(Player):
 
     @classmethod
@@ -47,7 +49,7 @@ class Target(Player):
         pass
 
     def draw(self, surface:pygame.Surface, cameraPos:tuple):
-        pygame.draw.rect(surface, Player.RED, pygame.Rect(
+        pygame.draw.rect(surface, Colors.RED, pygame.Rect(
             self.x - cameraPos[0] - Player.SIZE/2, self.y - cameraPos[1] - Player.SIZE/2,
             Player.SIZE,
             Player.SIZE

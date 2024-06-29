@@ -3,12 +3,9 @@ import pygame
 from .Map import Map
 from .Bullet import Bullet
 
-class Player:
-    RED = (232,50,41)
-    FADED_RED = (234,140,139)
-    BLUE = (66, 85, 210)
-    FADED_BLUE = (160, 168, 199)
+from .constants import Colors
 
+class Player:
     SIZE = 50
     SPEED = 8#4
 
@@ -70,11 +67,11 @@ class Player:
                 self.x = (left+1) * Map.TILE_SIZE + Player.SIZE/2
 
         # Shooting
-        self.isShooting = inputs["isShooting"]
+        self.isShooting = inputs["keys"][2]
         self.angle = inputs["angle"]
 
     def draw(self, surface:pygame.Surface, cameraPos:tuple):
-        pygame.draw.rect(surface, Player.BLUE, pygame.Rect(
+        pygame.draw.rect(surface, Colors.BLUE, pygame.Rect(
             self.x - cameraPos[0] - Player.SIZE/2, self.y - cameraPos[1] - Player.SIZE/2,
             Player.SIZE,
             Player.SIZE

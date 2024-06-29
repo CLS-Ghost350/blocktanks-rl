@@ -4,11 +4,11 @@ import math
 from sb3_plus import MultiOutputPPO
 
 from stable_baselines3.common.vec_env import DummyVecEnv, VecFrameStack
-from gym.spaces import MultiDiscrete, Box, Dict
+from gymnasium.spaces import MultiDiscrete, Box, Dict
 from keyboard import is_pressed
 from pygame import mouse
 
-from BlocktanksEnv import BlocktanksEnv
+from BlocktanksEnv import BlocktanksEnv, BlocktanksGame
 
 manual = True
 
@@ -38,25 +38,28 @@ for episode in range(1, episodes + 1):
             print(action)
 
         else:
+            # Mouse Actions
+            mouse_clicked = 1 if mouse.get_pressed()[0] else 0 #Returns 1 if clicked, 0 otherwise
+
             # Key Actions
-            keys = [ 1, 1 ]
+            keys = [ 1, 1, mouse_clicked ]
             if is_pressed('w'): keys[0] += 1
             if is_pressed('s'): keys[0] -= 1
             if is_pressed('a'): keys[1] -= 1
             if is_pressed('d'): keys[1] += 1
 
-            # Mouse Actions
-            mouse_clicked = 1 if mouse.get_pressed()[0] else 0 #Returns 1 if clicked, 0 otherwise
 
             # Angle Calculations based on Mouse Positions
-            player = env.game.player
+            centerX = BlocktanksGame.WINDOW_SIZE[0] / 2
+            centerY = BlocktanksGame.WINDOW_SIZE[1] / 2
+
             mouse_pos = mouse.get_pos()
 
-            x_diff = mouse_pos[0] - player.x
-            y_diff = mouse_pos[1] - player.y
-            angle = math.atan(x_diff/y_diff) #I have no idea why this is the case
+            #print(mouse_pos, (centerX, centerY))
 
-            action = { "keys": keys, "isShooting" : mouse_clicked, "angle": angle}
+            angle = math.atan2(mouse_pos[1] - centerY, mouse_pos[0] - centerX) 
+
+            action = { "keys": keys, "angle": angle}
         #action = [1,2]
 
         obs, reward, terminated, truncated, info = env.step(action)

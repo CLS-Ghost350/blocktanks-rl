@@ -1,10 +1,9 @@
 import math, random, pygame
 
 from .Map import Map
+from .constants import Colors
 
 class Bullet:
-    PLAYER_COLOR = (66, 85, 210)
-    COLOR = (100, 100, 100)
     RADIUS = 7
     HITBOX_SIZE = 11
     SPEED = 16#8
@@ -35,28 +34,12 @@ class Bullet:
 
         return cls(x, y, direction, team, map)
 
-    @classmethod
-    def spawnPlayerBullet(cls, playerPos, angle, team, map): 
-
-        x = playerPos[0]
-        y = playerPos[1]
-        
-        direction = angle
-        return cls(x, y, direction, team, map)
-
     def __init__(self, x, y, direction, team, map): 
         self.x = x
         self.y = y
         self.direction = direction
 
         self.team = team
-        self.color = (100, 100, 100)
-
-        #Setting Up Bullet Colors
-        if (self.team == "blue"):
-            self.color = Bullet.PLAYER_COLOR
-        else:
-            self.color = Bullet.COLOR
         
         self.map = map
 
@@ -140,4 +123,4 @@ class Bullet:
             self.despawnTime = -1
     
     def draw(self, surface, cameraPos):
-        pygame.draw.circle(surface, self.color, (self.x - cameraPos[0], self.y - cameraPos[1]), Bullet.RADIUS)
+        pygame.draw.circle(surface, Colors.BULLET[self.team], (self.x - cameraPos[0], self.y - cameraPos[1]), Bullet.RADIUS)
