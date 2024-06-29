@@ -7,7 +7,7 @@ from .Map import Map
 class Target(Player):
 
     @classmethod
-    def spawnRandomTarget(cls, playerPos, minDist, maxDist, map): 
+    def spawnRandomTarget(cls, playerPos:tuple, minDist:float, maxDist:float, map:Map): 
         colliding = True
         i = 0
 
@@ -33,12 +33,12 @@ class Target(Player):
                     if map.tiles[r][c] == "w":
                         if pygame.Rect.colliderect(map.getTileRect(r, c), pygame.Rect(left, top, Player.SIZE, Player.SIZE)):
                             colliding =True
-                            print("coll", map.getTileRect(r, c))
+                            #print("coll", map.getTileRect(r, c))
                             break
 
         return cls(map, x, y)
 
-    def __init__(self, map, x, y):
+    def __init__(self, map:Map, x:float, y:float):
         self.map = map
         self.x = x
         self.y = y
@@ -46,7 +46,7 @@ class Target(Player):
     def update(self):
         pass
 
-    def draw(self, surface, cameraPos):
+    def draw(self, surface:pygame.Surface, cameraPos:tuple):
         pygame.draw.rect(surface, Player.RED, pygame.Rect(
             self.x - cameraPos[0] - Player.SIZE/2, self.y - cameraPos[1] - Player.SIZE/2,
             Player.SIZE,

@@ -9,7 +9,7 @@ class Bullet:
     SPEED = 16#8
 
     @classmethod
-    def spawnRandomBullet(cls, playerPos, minDist, maxDist, angleDeviation, team, map):
+    def spawnRandomBullet(cls, playerPos:tuple, minDist:float, maxDist:float, angleDeviation:float, team:str, map:Map):
         dist = random.uniform(minDist, maxDist)
         angle = random.uniform(-math.pi, math.pi)
 
@@ -21,7 +21,7 @@ class Bullet:
         return cls(x, y, direction, team, map)
 
     @classmethod
-    def spawnTargettedBullet(cls, playerPos, playerVel, minDist, maxDist, team, map):
+    def spawnTargettedBullet(cls, playerPos:tuple, playerVel:float, minDist:float, maxDist:float, team:str, map:Map):
         dist = random.uniform(minDist, maxDist)
         angle = random.uniform(-math.pi, math.pi)
 

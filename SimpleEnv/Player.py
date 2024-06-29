@@ -11,14 +11,14 @@ class Player:
     SIZE = 50
     SPEED = 8#4
 
-    def __init__(self, map):
+    def __init__(self, map:Map):
         self.map = map
         self.x = 1050
         self.y = 1050
 
-    def update(self, action):
-        moveY = action["keys"][0]
-        moveX = action["keys"][1]
+    def update(self, inputs):
+        moveY = inputs["keys"][0]
+        moveX = inputs["keys"][1]
 
         dx = 0
         dy = 0
@@ -67,7 +67,7 @@ class Player:
             if self.map.tiles[top][left] == "w" or self.map.tiles[bottom][left] == "w":
                 self.x = (left+1) * Map.TILE_SIZE + Player.SIZE/2
 
-    def draw(self, surface, cameraPos):
+    def draw(self, surface:pygame.Surface, cameraPos:tuple):
         pygame.draw.rect(surface, Player.BLUE, pygame.Rect(
             self.x - cameraPos[0] - Player.SIZE/2, self.y - cameraPos[1] - Player.SIZE/2,
             Player.SIZE,
