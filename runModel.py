@@ -2,7 +2,7 @@ import os
 from SimpleEnv.BlocktanksEnv import BlocktanksEnv
 from stable_baselines3 import A2C, PPO
 from stable_baselines3.common.vec_env import DummyVecEnv, VecFrameStack
-
+from gym.spaces import MultiDiscrete, Box, Dict
 from keyboard import is_pressed
 
 manual = True
@@ -14,7 +14,7 @@ env = BlocktanksEnv(render=True,seed=2)
 
 #env = DummyVecEnv([ lambda: env ])
 #env = VecFrameStack(env, 4, channels_order='last')
-model = PPO.load(model_path)
+#model = PPO.load(model_path)
 
 episodes = 5
 
@@ -32,7 +32,7 @@ for episode in range(1, episodes + 1):
             print(action)
 
         else:
-            action = [ 1, 1 ]
+            action = Dict({ "keys": [1, 1]})
             if is_pressed('w'): action[0] += 1
             if is_pressed('s'): action[0] -= 1
             if is_pressed('a'): action[1] -= 1

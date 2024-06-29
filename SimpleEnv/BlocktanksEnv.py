@@ -51,7 +51,7 @@ class BlocktanksEnv(Env):
         BlocktanksEnv.instances += 1
         print(BlocktanksEnv.instances)
         
-        self.action_space = Dict({ "keys": MultiDiscrete([3, 3]), "angle": Box(0, 255, (1), np.uint8) })
+        self.action_space = Dict({ "keys": MultiDiscrete([3, 3]), "angle": Box(0, 255, (1,), np.uint8) })
         self.observation_space = Box(0, 255, (165, 316, 3), np.uint8)
 
         #self.n_steps = kwargs.get("n_steps", None)
