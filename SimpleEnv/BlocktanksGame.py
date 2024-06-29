@@ -31,9 +31,11 @@ class BlocktanksGame:
 
     WINDOW_SIZE = (316*5, 165*5)
 
-    BULLET_SPAWN_SPEED = 10#30#15#10
+    BULLET_SPAWN_SPEED = 10 #100#30#15#10
 
-    TARGET_SPAWN_SPEED = 1
+    TARGET_SPAWN_SPEED = 30 #1
+
+    PLAYER_BULLET_SPAWN_SPEED = 5
 
     def __init__(self, **kwargs): 
         self.doRender = kwargs.get("render", False)
@@ -62,6 +64,7 @@ class BlocktanksGame:
 
         self.bullets = []
         self.spawnBulletCooldown = 5
+        self.playerBulletCooldown = 5
 
         self.targets = []
         self.spawnTargetCooldown = 5
@@ -101,7 +104,14 @@ class BlocktanksGame:
             
             self.targets.append(Target.spawnRandomTarget((self.player.x, self.player.y), 200, 250, self.map))
 
+        # Adding Player Bullets
+        self.playerBulletCooldown -= 1
+        if (self.playerBulletCooldown < 0):
+            self.playerBulletCooldown = BlocktanksGame.PLAYER_BULLET_SPAWN_SPEED
 
+            if self.player.isShooting == 1:
+                print(self.player.angle)
+                self.bullets.append(Bullet.spawnPlayerBullet((self.player.x, self.player.y), self.player.angle, "blue", self.map)) 
 
         cameraPos = (self.player.x - BlocktanksGame.WINDOW_SIZE[0]/2, self.player.y - BlocktanksGame.WINDOW_SIZE[1]/2)
 
@@ -122,7 +132,7 @@ class BlocktanksGame:
         colliding = False
 
         for bullet in self.bullets:
-
+            if (bullet.team == "blue"): continue
             if circleRect(bullet.x, bullet.y, Bullet.RADIUS, 
                 self.player.x - Player.SIZE/2, self.player.y - Player.SIZE/2,
                 Player.SIZE, Player.SIZE):

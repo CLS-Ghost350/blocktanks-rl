@@ -3,6 +3,7 @@ import math, random, pygame
 from .Map import Map
 
 class Bullet:
+    PLAYER_COLOR = (66, 85, 210)
     COLOR = (100, 100, 100)
     RADIUS = 7
     HITBOX_SIZE = 11
@@ -49,6 +50,14 @@ class Bullet:
         self.direction = direction
 
         self.team = team
+        self.color = (100, 100, 100)
+
+        #Setting Up Bullet Colors
+        if (self.team == "blue"):
+            self.color = Bullet.PLAYER_COLOR
+        else:
+            self.color = Bullet.COLOR
+        
         self.map = map
 
         self.dx = math.cos(self.direction) * Bullet.SPEED
@@ -131,4 +140,4 @@ class Bullet:
             self.despawnTime = -1
     
     def draw(self, surface, cameraPos):
-        pygame.draw.circle(surface, Bullet.COLOR, (self.x - cameraPos[0], self.y - cameraPos[1]), Bullet.RADIUS)
+        pygame.draw.circle(surface, self.color, (self.x - cameraPos[0], self.y - cameraPos[1]), Bullet.RADIUS)

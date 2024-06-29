@@ -1,6 +1,7 @@
 import pygame
 
 from .Map import Map
+from .Bullet import Bullet
 
 class Player:
     RED = (232,50,41)
@@ -17,6 +18,7 @@ class Player:
         self.y = 1050
 
     def update(self, inputs):
+        # Movement
         moveY = inputs["keys"][0]
         moveX = inputs["keys"][1]
 
@@ -66,6 +68,10 @@ class Player:
             
             if self.map.tiles[top][left] == "w" or self.map.tiles[bottom][left] == "w":
                 self.x = (left+1) * Map.TILE_SIZE + Player.SIZE/2
+
+        # Shooting
+        self.isShooting = inputs["isShooting"]
+        self.angle = inputs["angle"]
 
     def draw(self, surface:pygame.Surface, cameraPos:tuple):
         pygame.draw.rect(surface, Player.BLUE, pygame.Rect(

@@ -1,5 +1,5 @@
 from gymnasium import Env
-from gymnasium.spaces import MultiDiscrete, Box, Dict
+from gymnasium.spaces import MultiDiscrete, Discrete, Box, Dict
 import gymnasium as gym
 import numpy as np
 import math, random
@@ -22,7 +22,7 @@ class BlocktanksEnv(Env):
         BlocktanksEnv.instances += 1
         print(BlocktanksEnv.instances)
 
-        self.action_space = Dict({ "keys": MultiDiscrete([3, 3]), "angle": Box(0, 255, (1,), np.uint8) })
+        self.action_space = Dict({ "keys": MultiDiscrete([3, 3]), "isShooting": Discrete(2), "angle": Box(0, 255, (1,), np.uint8) })
         self.observation_space = Box(0, 255, (165, 316, 3), np.uint8)
 
         #self.n_steps = kwargs.get("n_steps", None)
@@ -44,7 +44,7 @@ class BlocktanksEnv(Env):
         return self.get_obs(), {}
 
     def step(self, action: Dict):
-        inputs = { "keys": action["keys"] }
+        inputs = { "keys": action["keys"], "isShooting": action["isShooting"], "angle": action["angle"] }
 
         surface, events = self.game.step(inputs)
 
