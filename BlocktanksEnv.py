@@ -15,6 +15,7 @@ import cv2
 class BlocktanksEnv(Env):
     DEATH_PENALTY = 0#600
     ALIVE_REWARD = 1
+    KILL_REWARD = 5
 
     instances = 0
 
@@ -56,8 +57,12 @@ class BlocktanksEnv(Env):
         if self.render:
             cv2.imshow("AI View", curObs)
 
+        # Reward Handling
         if "DEATH" in events:
             return curObs, -BlocktanksEnv.DEATH_PENALTY, True, False, {} 
+        
+        if "KILL" in events:
+            return curObs, BlocktanksEnv.ALIVE_REWARD + BlocktanksEnv.KILL_REWARD, False, False, {}
 
         return curObs, BlocktanksEnv.ALIVE_REWARD, False, False, {}
 

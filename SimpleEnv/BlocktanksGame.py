@@ -60,6 +60,7 @@ class BlocktanksGame:
         self.spawnTargetCooldown = 5
 
     def step(self, inputs):
+
         if self.doRender:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -71,7 +72,6 @@ class BlocktanksGame:
         self.timeSteps += 1
 
         self.player.update(inputs)
-    
 
         for bullet in self.bullets:
             bullet.update()
@@ -88,10 +88,15 @@ class BlocktanksGame:
         for target in self.targets:
             target.update()
 
+        # Target Spawning
         self.spawnTargetCooldown -= 1
         if self.spawnTargetCooldown < 0:
             self.spawnTargetCooldown = BlocktanksGame.TARGET_SPAWN_SPEED
             
+            self.targets.append(Target.spawnRandomTarget((self.player.x, self.player.y), 200, 250, self.map))
+
+        # I'm trying this code out -> Spawns Target if none exist
+        if not self.targets:
             self.targets.append(Target.spawnRandomTarget((self.player.x, self.player.y), 200, 250, self.map))
 
         # Adding Player Bullets
@@ -100,7 +105,7 @@ class BlocktanksGame:
             self.playerBulletCooldown = BlocktanksGame.PLAYER_BULLET_SPAWN_SPEED
 
             if self.player.isShooting == 1:
-                print(self.player.angle)
+                #print(self.player.angle)
                 self.bullets.append(Bullet(self.player.x, self.player.y, inputs["angle"], "blue", self.map))
 
         cameraPos = (self.player.x - BlocktanksGame.WINDOW_SIZE[0]/2, self.player.y - BlocktanksGame.WINDOW_SIZE[1]/2)
@@ -118,8 +123,8 @@ class BlocktanksGame:
         for target in self.targets:
             target.draw(self.window_surface, cameraPos)
 
-
-        colliding = False
+        # Bullet Collision With Player
+        colliding_player = False
 
         for bullet in self.bullets:
             if (bullet.team == "blue"): continue
@@ -128,12 +133,32 @@ class BlocktanksGame:
                 self.player.x - Player.SIZE/2, self.player.y - Player.SIZE/2,
                 Player.SIZE, Player.SIZE):
 
-                colliding = True
+                colliding_player = True
                 break
 
             
-        if colliding:
+        if colliding_player:
             return self.window_surface, { "DEATH" }
+        
+        # Collision With Targets
+        colliding_target = False
+
+        for bullet in self.player_bullets:
+            for target in self.targets:
+                if circleRect(bullet.x, bullet.y, Bullet.RADIUS, 
+                    target.x - Player.SIZE/2, target.y - Player.SIZE/2, 
+                    Player.SIZE, Player.SIZE):
+
+                    self.targets.remove(target)
+                    colliding_target = True
+                    break
+            else: # Stackoverflow Code for breaking out of Outer Loop
+                continue
+            break
+
+
+        if colliding_target:
+            return self.window_surface, {"KILL"}
 
         return self.window_surface, { }
 

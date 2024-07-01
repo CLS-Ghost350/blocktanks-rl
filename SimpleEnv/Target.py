@@ -32,7 +32,7 @@ class Target(Player):
     
             for r in range(tileTR, tileTR + 2): 
                 for c in range(tileLC, tileLC + 2):
-                    if map.tiles[r][c] == "w":
+                    if map.tiles[r][c] == "w" or map.tiles[r][c] == "o":
                         if pygame.Rect.colliderect(map.getTileRect(r, c), pygame.Rect(left, top, Player.SIZE, Player.SIZE)):
                             colliding =True
                             #print("coll", map.getTileRect(r, c))
