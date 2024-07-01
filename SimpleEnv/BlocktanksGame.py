@@ -161,8 +161,8 @@ class BlocktanksGame:
         if colliding_target:
             return self.window_surface, {"KILL"}
         
-        if self.player.isShooting: #Testing Code
-            return self.window_surface, {"SHOOTING"}
+        #if self.player.isShooting: #Testing Code
+        #    return self.window_surface, {"SHOOTING"}
 
         return self.window_surface, { }
 

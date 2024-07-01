@@ -16,7 +16,7 @@ class BlocktanksEnv(Env):
     DEATH_PENALTY = 0#600
     ALIVE_REWARD = 1
     KILL_REWARD = 5
-    SHOOTING_REWARD = 0.1 #Testing to get the bot to shoot
+    #SHOOTING_REWARD = 0.1 #Testing to get the bot to shoot
 
     instances = 0
 
@@ -65,8 +65,8 @@ class BlocktanksEnv(Env):
         if "KILL" in events:
             return curObs, BlocktanksEnv.ALIVE_REWARD + BlocktanksEnv.KILL_REWARD, False, False, {}
         
-        if "SHOOTING" in events:
-            return curObs, BlocktanksEnv.ALIVE_REWARD + BlocktanksEnv.SHOOTING_REWARD, False, False, {}
+        #if "SHOOTING" in events:
+        #    return curObs, BlocktanksEnv.ALIVE_REWARD + BlocktanksEnv.SHOOTING_REWARD, False, False, {}
 
         return curObs, BlocktanksEnv.ALIVE_REWARD, False, False, {}
 
