@@ -25,7 +25,7 @@ class BlocktanksGame:
 
     TARGET_SPAWN_SPEED = 30 #1
 
-    PLAYER_BULLET_SPAWN_SPEED = 5
+    PLAYER_BULLET_SPAWN_SPEED = 0
 
     def __init__(self, **kwargs): 
         self.doRender = kwargs.get("render", False)
@@ -77,6 +77,7 @@ class BlocktanksGame:
             bullet.update()
 
         self.bullets = [ bullet for bullet in self.bullets if bullet.despawnTime > 0 ]
+        self.player_bullets = [bullet for bullet in self.bullets if bullet.team == "blue"]
 
         self.spawnBulletCooldown -= 1
         if self.spawnBulletCooldown < 0:
@@ -95,7 +96,7 @@ class BlocktanksGame:
 
         # Adding Player Bullets
         self.playerBulletCooldown -= 1
-        if (self.playerBulletCooldown < 0):
+        if (self.playerBulletCooldown < 0 and len(self.player_bullets) < 5):
             self.playerBulletCooldown = BlocktanksGame.PLAYER_BULLET_SPAWN_SPEED
 
             if self.player.isShooting == 1:
