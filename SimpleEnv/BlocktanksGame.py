@@ -106,6 +106,7 @@ class BlocktanksGame:
 
             if self.player.isShooting == 1:
                 #print(self.player.angle)
+                print("SHOOTING")
                 self.bullets.append(Bullet(self.player.x, self.player.y, inputs["angle"], "blue", self.map))
 
         cameraPos = (self.player.x - BlocktanksGame.WINDOW_SIZE[0]/2, self.player.y - BlocktanksGame.WINDOW_SIZE[1]/2)
@@ -159,6 +160,9 @@ class BlocktanksGame:
 
         if colliding_target:
             return self.window_surface, {"KILL"}
+        
+        if self.player.isShooting: #Testing Code
+            return self.window_surface, {"SHOOTING"}
 
         return self.window_surface, { }
 
