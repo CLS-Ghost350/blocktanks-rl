@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Frank End: train.py",
+            "name": "Frank End: train2.py",
             "type": "python",
             "request": "launch",
-            "program": "C:\\Users\\frank\\OneDrive\\Documents\\Coding-Projects\\blocktanks-rl\\train.py",
+            "program": "C:\\Users\\frank\\OneDrive\\Documents\\Coding-Projects\\blocktanks-rl\\train2.py",
             "console": "integratedTerminal",
             "justMyCode": true
         },
