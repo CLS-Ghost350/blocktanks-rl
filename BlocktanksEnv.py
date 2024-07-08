@@ -14,9 +14,9 @@ import cv2
 
 class BlocktanksEnv(Env):
     DEATH_PENALTY = 0#600
-    ALIVE_REWARD = 1
-    KILL_REWARD = 5
-    #SHOOTING_REWARD = 0.1 #Testing to get the bot to shoot
+    ALIVE_REWARD = 2
+    KILL_REWARD = 10
+    SHOOTING_PENALTY = 1
 
     instances = 0
 
@@ -24,7 +24,7 @@ class BlocktanksEnv(Env):
         BlocktanksEnv.instances += 1
         print(BlocktanksEnv.instances)
 
-        self.action_space = Dict({ "keys": MultiDiscrete([3, 3, 2]), "angle": Box(0, 255, (1,), np.uint8) })
+        self.action_space = Dict({ "keys": MultiDiscrete([3, 3, 2]), "angle": Box(-1, 1, (1,), np.float32) })
         self.observation_space = Box(0, 255, (165, 316, 3), np.uint8)
 
         #self.n_steps = kwargs.get("n_steps", None)
@@ -46,7 +46,7 @@ class BlocktanksEnv(Env):
         return self.get_obs(), {}
 
     def step(self, action: Dict):
-        inputs = { "keys": action["keys"], "angle": action["angle"] }
+        inputs = { "keys": action["keys"], "angle": action["angle"] * math.pi }
 
         surface, events = self.game.step(inputs)
 
@@ -60,13 +60,15 @@ class BlocktanksEnv(Env):
 
         # Reward Handling
         if "DEATH" in events:
-            return curObs, -BlocktanksEnv.DEATH_PENALTY, True, False, {} 
-        
+            return curObs, -BlocktanksEnv.DEATH_PENALTY, True, False, {}
+
+        reward = BlocktanksEnv.ALIVE_REWARD
+
         if "KILL" in events:
-            return curObs, BlocktanksEnv.ALIVE_REWARD + BlocktanksEnv.KILL_REWARD, False, False, {}
+            reward += BlocktanksEnv.KILL_REWARD
         
-        #if "SHOOTING" in events:
-        #    return curObs, BlocktanksEnv.ALIVE_REWARD + BlocktanksEnv.SHOOTING_REWARD, False, False, {}
+        if "SHOOTING" in events:
+            reward -= BlocktanksEnv.SHOOTING_PENALTY
 
         return curObs, BlocktanksEnv.ALIVE_REWARD, False, False, {}
 
