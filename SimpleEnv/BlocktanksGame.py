@@ -53,11 +53,11 @@ class BlocktanksGame:
         self.player = Player(self.map)
 
         self.bullets = []
-        self.spawnBulletCooldown = 5
-        self.playerBulletCooldown = 5
+        self.spawnBulletCooldown = BlocktanksGame.BULLET_SPAWN_SPEED
+        self.playerBulletCooldown = BlocktanksGame.PLAYER_BULLET_SPAWN_SPEED
 
         self.targets = []
-        self.spawnTargetCooldown = 5
+        self.spawnTargetCooldown = BlocktanksGame.TARGET_SPAWN_SPEED
 
     def step(self, inputs):
         events = set()
@@ -94,11 +94,11 @@ class BlocktanksGame:
         if self.spawnTargetCooldown < 0:
             self.spawnTargetCooldown = BlocktanksGame.TARGET_SPAWN_SPEED
             
-            self.targets.append(Target.spawnRandomTarget((self.player.x, self.player.y), 200, 500, self.map))
+            self.targets.append(Target.spawnRandomTarget((self.player.x, self.player.y), 200, 750, self.map))
 
         # I'm trying this code out -> Spawns Target if none exist
         if not self.targets:
-            self.targets.append(Target.spawnRandomTarget((self.player.x, self.player.y), 200, 250, self.map))
+            self.targets.append(Target.spawnRandomTarget((self.player.x, self.player.y), 200, 750, self.map))
 
         # Adding Player Bullets
         self.playerBulletCooldown -= 1
