@@ -8,6 +8,9 @@ from .constants import Colors
 
 class Target(Player):
 
+    SPEED = 8 
+    MAX_MOVEMENT_COOLDOWN = 35
+
     @classmethod
     def spawnRandomTarget(cls, playerPos:tuple, minDist:float, maxDist:float, map:Map): 
         colliding = True
@@ -45,9 +48,23 @@ class Target(Player):
         self.x = x
         self.y = y
 
-    def update(self):
-        pass
+        self.dx = random.choice([-1, 0, 1]) * self.SPEED
+        self.dy = random.choice([-1, 0, 1]) * self.SPEED
 
+        self.move_cooldown = random.randint(1, self.MAX_MOVEMENT_COOLDOWN) #Cooldown for change of movement direction
+    
+    def changeDirection(self):
+        self.dx = random.choice([-1, 0, 1]) * self.SPEED
+        self.dy = random.choice([-1, 0, 1]) * self.SPEED
+
+    def update(self):
+        self.x += self.dx
+        self.y += self.dy
+        self.move_cooldown -= 1
+        if (self.move_cooldown < 0):
+            self.changeDirection()
+            self.move_cooldown = random.randint(1, self.MAX_MOVEMENT_COOLDOWN)
+            
     def draw(self, surface:pygame.Surface, cameraPos:tuple):
         pygame.draw.rect(surface, Colors.RED, pygame.Rect(
             self.x - cameraPos[0] - Player.SIZE/2, self.y - cameraPos[1] - Player.SIZE/2,

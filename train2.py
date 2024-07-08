@@ -21,7 +21,7 @@ def create_env(seed):
     return init
 
 envs_num = 6
-total = 2000
+total = 200
 
 if __name__ == "__main__":
     for i in range(int(total/200)):
