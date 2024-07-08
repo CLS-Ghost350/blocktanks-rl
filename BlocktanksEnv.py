@@ -14,9 +14,11 @@ import cv2
 
 class BlocktanksEnv(Env):
     DEATH_PENALTY = -0#600
-    ALIVE_REWARD = 0.2
-    KILL_REWARD = 1
-    SHOOTING_PENALTY = -0.1
+    ALIVE_REWARD = 2
+    KILL_REWARD = 10
+    SHOOTING_PENALTY = -1
+
+    MAX_REWARD = max(max(-DEATH_PENALTY, -(SHOOTING_PENALTY)), ALIVE_REWARD + KILL_REWARD )
 
     instances = 0
 
@@ -60,7 +62,7 @@ class BlocktanksEnv(Env):
 
         # Reward Handling
         if "DEATH" in events:
-            return curObs, BlocktanksEnv.DEATH_PENALTY, True, False, {}
+            return curObs, BlocktanksEnv.DEATH_PENALTY / BlocktanksEnv.MAX_REWARD, True, False, {}
 
         reward = BlocktanksEnv.ALIVE_REWARD
 
@@ -70,7 +72,7 @@ class BlocktanksEnv(Env):
         if "SHOOTING" in events:
             reward += BlocktanksEnv.SHOOTING_PENALTY
 
-        return curObs, reward, False, False, {}
+        return curObs, reward / BlocktanksEnv.MAX_REWARD, False, False, {}
 
     @staticmethod
     def get_obs_frame(surface: pygame.Surface): # no way of knowing past actions, which skew past frames
