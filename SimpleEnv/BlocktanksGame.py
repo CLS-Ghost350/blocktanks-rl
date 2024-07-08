@@ -23,7 +23,7 @@ class BlocktanksGame:
 
     BULLET_SPAWN_SPEED = 10 #100#30#15#10
 
-    TARGET_SPAWN_SPEED = 30 #1
+    TARGET_SPAWN_SPEED = 100 #1
 
     PLAYER_BULLET_SPAWN_SPEED = 0
 
@@ -60,6 +60,7 @@ class BlocktanksGame:
         self.spawnTargetCooldown = 5
 
     def step(self, inputs):
+        events = set()
 
         if self.doRender:
             for event in pygame.event.get():
@@ -93,7 +94,7 @@ class BlocktanksGame:
         if self.spawnTargetCooldown < 0:
             self.spawnTargetCooldown = BlocktanksGame.TARGET_SPAWN_SPEED
             
-            self.targets.append(Target.spawnRandomTarget((self.player.x, self.player.y), 200, 250, self.map))
+            self.targets.append(Target.spawnRandomTarget((self.player.x, self.player.y), 200, 500, self.map))
 
         # I'm trying this code out -> Spawns Target if none exist
         if not self.targets:
@@ -106,7 +107,7 @@ class BlocktanksGame:
 
             if self.player.isShooting == 1:
                 #print(self.player.angle)
-                print("SHOOTING")
+                #print("SHOOTING")
                 self.bullets.append(Bullet(self.player.x, self.player.y, inputs["angle"], "blue", self.map))
 
         cameraPos = (self.player.x - BlocktanksGame.WINDOW_SIZE[0]/2, self.player.y - BlocktanksGame.WINDOW_SIZE[1]/2)
@@ -159,12 +160,12 @@ class BlocktanksGame:
 
 
         if colliding_target:
-            return self.window_surface, {"KILL"}
+            events.add("KILL")
         
-        #if self.player.isShooting: #Testing Code
-        #    return self.window_surface, {"SHOOTING"}
+        if self.player.isShooting:
+            events.add("SHOOTING")
 
-        return self.window_surface, { }
+        return self.window_surface, events
 
     def render(self):
         pass
