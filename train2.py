@@ -5,6 +5,8 @@ from sb3_plus import MultiOutputPPO, MultiOutputEnv
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 from stable_baselines3.common.evaluation import evaluate_policy
 
+from stable_baselines3.common.torch_layers import NatureCNN
+
 from BlocktanksEnv import BlocktanksEnv
 
 import math
@@ -33,15 +35,20 @@ TOTAL_TIMESTEPS = int(100 * 1000 / STEPS_PER_SAVE) * STEPS_PER_SAVE + 1
 
 # fps around 18 per env (108 total)
 
-#env = BlocktanksEnv()
-env = SubprocVecEnv([ create_env(seed) for seed in range(ENVS_NUM) ])
+if __name__ == "__main__":
+    #env = BlocktanksEnv()
+    env = SubprocVecEnv([ create_env(seed) for seed in range(ENVS_NUM) ])
 
-model = MultiOutputPPO("MultiOutputPolicy", env, verbose=1, n_steps=N_STEPS, tensorboard_log=log_path, learning_rate=lambda amountLeft: 0.0004 * amountLeft**2)
+    policy_kwargs = dict(
+        features_extractor_class=NatureCNN,
+    )
 
-SAVES = int(TOTAL_TIMESTEPS / STEPS_PER_SAVE)
-print("SAVES:", SAVES)
+    model = MultiOutputPPO("MultiOutputPolicy", env, verbose=1, n_steps=N_STEPS, tensorboard_log=log_path, policy_kwargs=policy_kwargs, learning_rate=lambda amountLeft: 0.0004 * amountLeft**2)
 
-for i in range(SAVES):
-    model.learn(total_timesteps=STEPS_PER_SAVE, log_interval=1)#1.75*1000*1000) #log_interval=100)
-    model.save(model_path)
-    print("Saved", i)
+    SAVES = int(TOTAL_TIMESTEPS / STEPS_PER_SAVE)
+    print("SAVES:", SAVES)
+
+    for i in range(SAVES):
+        model.learn(total_timesteps=STEPS_PER_SAVE, log_interval=1)#1.75*1000*1000) #log_interval=100)
+        model.save(model_path)
+        print("Saved", i)
