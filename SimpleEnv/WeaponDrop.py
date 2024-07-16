@@ -24,8 +24,8 @@ class WeaponDrop:
             if map.tiles[row][col] == 'a':
                 validSpawn = True
                 break
-
-        return cls(map, map.TILE_SIZE * row + map.TILE_SIZE/2, map.TILE_SIZE * col + map.TILE_SIZE/2)
+        
+        return cls(map, map.TILE_SIZE * col + map.TILE_SIZE/2, map.TILE_SIZE * row + map.TILE_SIZE/2)
 
     def __init__(self, map:Map, x:float, y:float): 
         self.x = x
@@ -44,9 +44,9 @@ class WeaponDrop:
         pass
     
     def draw(self, surface, cameraPos):
-        pygame.draw.rect(surface, Colors.TESTING_GREEN, pygame.Rect(
-            self.x - cameraPos[0] - self.SIZE/2, self.y - cameraPos[1] - self.SIZE/2,
-            self.SIZE,
-            self.SIZE
-        ))
-        surface.blit(self.image, (self.x - cameraPos[0] - self.SIZE/2, self.y - cameraPos[1] - self.SIZE/2))
+        # pygame.draw.rect(surface, Colors.TESTING_GREEN, pygame.Rect(
+        #     self.x - cameraPos[0] - self.SIZE/2, self.y - cameraPos[1] - WeaponDrop.SIZE/2,
+        #     WeaponDrop.SIZE,
+        #     WeaponDrop.SIZE
+        # ))
+        surface.blit(self.image, (self.x - cameraPos[0] - WeaponDrop.SIZE/2, self.y - cameraPos[1] - WeaponDrop.SIZE/2))

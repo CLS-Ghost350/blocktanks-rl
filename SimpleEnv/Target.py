@@ -58,14 +58,14 @@ class Target(Player):
         self.dy = random.choice([-1, 0, 1]) * self.SPEED
 
     def update(self):
-        self.x += self.dx
-        self.y += self.dy
         self.move_cooldown -= 1
         if (self.move_cooldown < 0):
             self.changeDirection()
             self.move_cooldown = random.randint(1, self.MAX_MOVEMENT_COOLDOWN)
 
         # Wall Collisions
+        self.y += self.dy
+        
         left = int((self.x - Player.SIZE/2) // Map.TILE_SIZE)
         right = int((self.x + Player.SIZE/2 - 1) // Map.TILE_SIZE)
         

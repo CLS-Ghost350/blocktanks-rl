@@ -93,9 +93,10 @@ class BlocktanksGame:
         # Bullet Spawning
         self.spawnBulletCooldown -= 1
         if self.spawnBulletCooldown < 0:
-            self.spawnBulletCooldown = BlocktanksGame.BULLET_SPAWN_SPEED - round(min(self.timeSteps/1000, 1) * 7)
+            pass
+            #self.spawnBulletCooldown = BlocktanksGame.BULLET_SPAWN_SPEED - round(min(self.timeSteps/1000, 1) * 7)
 
-            self.bullets.append(Bullet.spawnRandomBullet((self.player.x, self.player.y), 200, 250, math.pi/4, "red", self.map))
+            #self.bullets.append(Bullet.spawnRandomBullet((self.player.x, self.player.y), 200, 250, math.pi/4, "red", self.map))
 
         # Target Updating
         for target in self.targets:
