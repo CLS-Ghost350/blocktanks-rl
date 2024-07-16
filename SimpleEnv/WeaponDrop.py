@@ -14,12 +14,13 @@ class WeaponDrop:
         row = -1
         col = -1
 
+
         while (not validSpawn):       
             # Pick a random tile
             row = random.randint(0, len(map.tiles)-1)
             col = random.randint(0, len(map.tiles[row])-1)
 
-            print("lengths", len(map.tiles), len(map.tiles[row]), row, col)
+            #print("lengths", len(map.tiles), len(map.tiles[row]), row, col)
             if map.tiles[row][col] == 'a':
                 validSpawn = True
                 break
