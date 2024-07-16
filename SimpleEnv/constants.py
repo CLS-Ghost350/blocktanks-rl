@@ -10,5 +10,7 @@ class Colors:
     COUNTDOWN_GREY = (68, 68, 68)
     KILL_RED = (255, 26, 0)
     DEATH_BLUE = (56, 0, 255)
+    
+    TESTING_GREEN = (25, 255, 38, 0.51)
 
-    BULLET = { "blue": (100, 100, 100), "red": RED }
+    BULLET = { "blue": (100, 100, 100), "red": RED }   
