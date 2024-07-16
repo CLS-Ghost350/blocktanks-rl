@@ -3,7 +3,7 @@ import math, random, pygame
 from .Map import Map
 from .constants import Colors
 
-class Bullet:
+class WeaponDrop:
     TYPES = ["bomb", "bottle_bomb", "flashbang", "hand_grenade", "rapid_bullet", "rocket", "shotgun_shell", "sniper_bullet"]
     SIZE = 40
 
@@ -16,9 +16,10 @@ class Bullet:
 
         while (not validSpawn):       
             # Pick a random tile
-            row = random.randInt(0, len(map))
-            col = random.randInt(0, len(map[row]))
+            row = random.randint(0, len(map.tiles)-1)
+            col = random.randint(0, len(map.tiles[row])-1)
 
+            print("lengths", len(map.tiles), len(map.tiles[row]), row, col)
             if map.tiles[row][col] == 'a':
                 validSpawn = True
                 break
@@ -30,7 +31,9 @@ class Bullet:
         self.y = y
 
         self.type = random.choice(self.TYPES)
-        self.image = pygame.image.load(self.type + '.png')
+        self.image = pygame.transform.scale(pygame.image.load('./SimpleEnv/Resources/'+self.type + '.png'), (self.SIZE, self.SIZE))
+        
+        #Hitbox rect
         
         self.map = map
         

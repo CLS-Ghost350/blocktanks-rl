@@ -17,6 +17,7 @@ class BlocktanksEnv(Env):
     ALIVE_REWARD = 2
     KILL_REWARD = 10
     SHOOTING_PENALTY = -1
+    WEAPON_PICKUP_REWARD = 1
 
     MAX_REWARD = max(max(-DEATH_PENALTY, -(SHOOTING_PENALTY)), ALIVE_REWARD + KILL_REWARD )
 
@@ -71,6 +72,9 @@ class BlocktanksEnv(Env):
         
         if "SHOOTING" in events:
             reward += BlocktanksEnv.SHOOTING_PENALTY
+
+        if "WEAPON" in events:
+            reward += BlocktanksEnv.WEAPON_PICKUP_REWARD
 
         return curObs, reward / BlocktanksEnv.MAX_REWARD, False, False, {}
 

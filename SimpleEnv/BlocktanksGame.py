@@ -26,7 +26,7 @@ class BlocktanksGame:
 
     TARGET_SPAWN_SPEED = 100 #1
 
-    WEAPON_DROP_SPAWN_SPEED = 10
+    WEAPON_DROP_SPAWN_SPEED = 20
 
     PLAYER_BULLET_SPAWN_SPEED = 0
 
@@ -117,10 +117,11 @@ class BlocktanksGame:
             weapon_drop.update() #Useless for the time being but maybe useful later for despawning if we need that?
 
         # Weapon Drop Spawning
-        
-
+        self.spawnWeaponDropCooldown -= 1
         if self.spawnWeaponDropCooldown < 0:
-            pass
+            self.spawnWeaponDropCooldown = BlocktanksGame.WEAPON_DROP_SPAWN_SPEED
+
+            self.weapon_drops.append(WeaponDrop.spawnRandomWeaponDrop(self.map))
 
         # Adding Player Bullets
         self.playerBulletCooldown -= 1
@@ -137,6 +138,7 @@ class BlocktanksGame:
         self.window_surface.blit(self.background, (0, 0))
         #self.window_surface.blit(bg, (-500 - cameraPos[0], -500 - cameraPos[1]))
 
+        # Drawing
         self.map.draw(self.window_surface, cameraPos)
 
         self.player.draw(self.window_surface, cameraPos)
@@ -146,6 +148,9 @@ class BlocktanksGame:
 
         for target in self.targets:
             target.draw(self.window_surface, cameraPos)
+
+        for weapon_drop in self.weapon_drops:
+            weapon_drop.draw(self.window_surface, cameraPos)
 
         # Bullet Collision With Player
         colliding_player = False
@@ -179,13 +184,39 @@ class BlocktanksGame:
             else: # Stackoverflow Code for breaking out of Outer Loop
                 continue
             break
+        
+        # Collision with Weapon Drops
+        colliding_weapon_drop = False
 
+        for weapon_drop in self.weapon_drops: 
+            #Should we refactor later
+            weapon_drop_hitbox = pygame.Rect(
+                weapon_drop.x - cameraPos[0] - WeaponDrop.SIZE/2, 
+                weapon_drop.y - cameraPos[1] - WeaponDrop.SIZE/2,
+                WeaponDrop.SIZE,
+                WeaponDrop.SIZE
+            )
+            player_hitbox = pygame.Rect(
+                self.player.x - cameraPos[0] - Player.SIZE/2, 
+                self.player.y - cameraPos[1] - Player.SIZE/2,
+                Player.SIZE,
+                Player.SIZE
+            )
+
+            if (weapon_drop_hitbox.colliderect(player_hitbox)):
+                self.weapon_drops.remove(weapon_drop)
+                colliding_weapon_drop = True
+
+        #Reward Handling
 
         if colliding_target:
             events.add("KILL")
         
         if self.player.isShooting:
             events.add("SHOOTING")
+
+        if colliding_weapon_drop:
+            events.add("WEAPON")
 
         return self.window_surface, events
 
