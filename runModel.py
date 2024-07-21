@@ -1,16 +1,16 @@
 import os
 import math
 
-from sb3_plus import MultiOutputPPO
+from stable_baselines3 import PPO
 
 from stable_baselines3.common.vec_env import DummyVecEnv, VecFrameStack
-from gymnasium.spaces import MultiDiscrete, Box, Dict
+from gymnasium.spaces import MultiDiscrete, Box
 from keyboard import is_pressed
 from pygame import mouse
 
 from BlocktanksEnv import BlocktanksEnv, BlocktanksGame
 
-manual = True
+manual = False
 
 env = BlocktanksEnv(render=True,seed=2)
 
@@ -20,7 +20,7 @@ if not manual:
 
     #env = DummyVecEnv([ lambda: env ])
     #env = VecFrameStack(env, 4, channels_order='last')
-    model = MultiOutputPPO.load(model_path)
+    model = PPO.load(model_path)
 
 episodes = 5
 
@@ -39,19 +39,18 @@ for episode in range(1, episodes + 1):
 
         if not manual:
             action, _states = model.predict(obs)
-            print(action)
 
         else:
             # Key Actions
-            keys = [ 1, 1, 0 ]
-            if is_pressed('w'): keys[0] += 1
-            if is_pressed('s'): keys[0] -= 1
-            if is_pressed('a'): keys[1] -= 1
-            if is_pressed('d'): keys[1] += 1
+            action = [ 1, 1, 0, 0 ]
+            if is_pressed('w'): action[0] += 1
+            if is_pressed('s'): action[0] -= 1
+            if is_pressed('a'): action[1] -= 1
+            if is_pressed('d'): action[1] += 1
 
             if mouse.get_pressed()[0]:
                 if not mouse_clicked_last:
-                    keys[2] = 1
+                    action[2] = 1
                     mouse_clicked_last = True
             else: mouse_clicked_last = False
 
@@ -63,10 +62,12 @@ for episode in range(1, episodes + 1):
 
             #print(mouse_pos, (centerX, centerY))
 
-            angle = math.atan2(mouse_pos[1] - centerY, mouse_pos[0] - centerX) 
-
-            action = { "keys": keys, "angle": angle / math.pi }
+            angle = (math.atan2(mouse_pos[1] - centerY, mouse_pos[0] - centerX) + 2*math.pi) % (2*math.pi)
+            action[3] = round(angle / (2*math.pi) * BlocktanksEnv.ANGLES) % BlocktanksEnv.ANGLES
+    
         #action = [1,2]
+
+        print(action)
 
         obs, reward, terminated, truncated, info = env.step(action)
 
@@ -76,4 +77,4 @@ for episode in range(1, episodes + 1):
         #cv2.waitKey()
 
         steps += 1
-        print(steps) # around 100-200 steps per episode
+        #print(steps) # around 100-200 steps per episode

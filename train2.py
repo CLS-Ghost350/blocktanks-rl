@@ -1,6 +1,6 @@
 import os
 
-from sb3_plus import MultiOutputPPO, MultiOutputEnv
+from stable_baselines3 import PPO
 
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv
 from stable_baselines3.common.evaluation import evaluate_policy
@@ -19,7 +19,6 @@ model_path = os.path.join("Training", "SavedModels", "A")
 def create_env(seed):
     def init():
         env = BlocktanksEnv(seed=seed)
-        env = MultiOutputEnv(env)
         return env
 
     return init
@@ -39,11 +38,7 @@ if __name__ == "__main__":
     #env = BlocktanksEnv()
     env = SubprocVecEnv([ create_env(seed) for seed in range(ENVS_NUM) ])
 
-    policy_kwargs = dict(
-        features_extractor_class=NatureCNN,
-    )
-
-    model = MultiOutputPPO("MultiOutputPolicy", env, verbose=1, n_steps=N_STEPS, tensorboard_log=log_path, policy_kwargs=policy_kwargs, learning_rate=lambda amountLeft: 0.0004 * amountLeft**2)
+    model = PPO("CnnPolicy", env, verbose=1, n_steps=N_STEPS, tensorboard_log=log_path, learning_rate=lambda amountLeft: 0.0004 * amountLeft**2)
 
     SAVES = int(TOTAL_TIMESTEPS / STEPS_PER_SAVE)
     print("SAVES:", SAVES)

@@ -1,6 +1,6 @@
 import os
 
-from sb3_plus import MultiOutputPPO
+from stable_baselines3 import PPO
 
 model_path = os.path.abspath(os.path.join("Training", "SavedModels", "A"))
-model = MultiOutputPPO.load(model_path)
+model = PPO.load(model_path)

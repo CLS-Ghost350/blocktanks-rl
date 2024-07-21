@@ -1,5 +1,5 @@
 from gymnasium import Env
-from gymnasium.spaces import MultiDiscrete, Discrete, Box, Dict
+from gymnasium.spaces import MultiDiscrete, Discrete, Box
 import gymnasium as gym
 import numpy as np
 import math, random
@@ -13,6 +13,8 @@ from SimpleEnv.BlocktanksGame import BlocktanksGame
 import cv2
 
 class BlocktanksEnv(Env):
+    ANGLES = 24
+
     DEATH_PENALTY = -30
     ALIVE_REWARD = 0
     KILL_REWARD = 20
@@ -27,7 +29,7 @@ class BlocktanksEnv(Env):
         BlocktanksEnv.instances += 1
         print(BlocktanksEnv.instances)
 
-        self.action_space = Dict({ "keys": MultiDiscrete([3, 3, 2]), "angle": Box(-1, 1, (1,), np.float32) })
+        self.action_space = MultiDiscrete([3, 3, 2, BlocktanksEnv.ANGLES]) # x-move, y-move, shoot (TODO: add powerups to this), angle
         self.observation_space = Box(0, 255, (165, 316, 3), np.uint8)
 
         #self.n_steps = kwargs.get("n_steps", None)
@@ -48,8 +50,8 @@ class BlocktanksEnv(Env):
 
         return self.get_obs(), {}
 
-    def step(self, action: Dict):
-        inputs = { "keys": action["keys"], "angle": action["angle"] * math.pi }
+    def step(self, action: MultiDiscrete):
+        inputs = { "keys": action[0:3], "angle": action[3] / BlocktanksEnv.ANGLES * 2*math.pi }
 
         surface, events = self.game.step(inputs)
 
