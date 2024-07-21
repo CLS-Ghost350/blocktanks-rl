@@ -31,6 +31,8 @@ class BlocktanksGame:
         self.doRender = kwargs.get("render", False)
         self._seed = kwargs.get("seed", 69)
 
+        random.seed(self._seed)
+
         pygame.display.set_caption("Game View")
 
         if self.doRender:
@@ -46,7 +48,7 @@ class BlocktanksGame:
         self.map = Map.fromFile(os.path.join(os.path.dirname(__file__), "map.map"))
 
     def reset(self, seed=None):
-        random.seed(seed or self._seed)
+        #random.seed(seed or self._seed)
 
         self.timeSteps = 0
 

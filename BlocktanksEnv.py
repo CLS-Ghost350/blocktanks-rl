@@ -13,9 +13,9 @@ from SimpleEnv.BlocktanksGame import BlocktanksGame
 import cv2
 
 class BlocktanksEnv(Env):
-    DEATH_PENALTY = -0#600
-    ALIVE_REWARD = 2
-    KILL_REWARD = 10
+    DEATH_PENALTY = -30
+    ALIVE_REWARD = 0
+    KILL_REWARD = 20
     SHOOTING_PENALTY = -1
 
     MAX_REWARD = max(max(-DEATH_PENALTY, -(SHOOTING_PENALTY)), ALIVE_REWARD + KILL_REWARD )
