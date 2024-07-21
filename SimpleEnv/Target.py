@@ -58,12 +58,45 @@ class Target(Player):
         self.dy = random.choice([-1, 0, 1]) * self.SPEED
 
     def update(self):
-        self.x += self.dx
-        self.y += self.dy
         self.move_cooldown -= 1
         if (self.move_cooldown < 0):
             self.changeDirection()
             self.move_cooldown = random.randint(1, self.MAX_MOVEMENT_COOLDOWN)
+
+        # Wall Collisions
+        self.y += self.dy
+        
+        left = int((self.x - Player.SIZE/2) // Map.TILE_SIZE)
+        right = int((self.x + Player.SIZE/2 - 1) // Map.TILE_SIZE)
+        
+        if self.dy > 0:
+            bottom = int((self.y + Player.SIZE/2) // Map.TILE_SIZE)
+            
+            if self.map.tiles[bottom][left] == "w" or self.map.tiles[bottom][right] == "w":
+                self.y = bottom * Map.TILE_SIZE - Player.SIZE/2
+                
+        elif self.dy < 0:
+            top = int((self.y - Player.SIZE/2) // Map.TILE_SIZE)
+            
+            if self.map.tiles[top][left] == "w" or self.map.tiles[top][right] == "w":
+                self.y = (top+1) * Map.TILE_SIZE + Player.SIZE/2
+        
+        self.x += self.dx
+        
+        bottom = int((self.y + Player.SIZE/2 - 1) // Map.TILE_SIZE)
+        top = int((self.y - Player.SIZE/2) // Map.TILE_SIZE)
+        
+        if self.dx > 0:
+            right = int((self.x + Player.SIZE/2) // Map.TILE_SIZE)
+            
+            if self.map.tiles[top][right] == "w" or self.map.tiles[bottom][right] == "w":
+                self.x = right * Map.TILE_SIZE - Player.SIZE/2
+                
+        elif self.dx < 0:
+            left = int((self.x - Player.SIZE/2) // Map.TILE_SIZE)
+            
+            if self.map.tiles[top][left] == "w" or self.map.tiles[bottom][left] == "w":
+                self.x = (left+1) * Map.TILE_SIZE + Player.SIZE/2
             
     def draw(self, surface:pygame.Surface, cameraPos:tuple):
         pygame.draw.rect(surface, Colors.RED, pygame.Rect(

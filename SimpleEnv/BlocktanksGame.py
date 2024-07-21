@@ -4,6 +4,7 @@ from .Bullet import Bullet
 from .Target import Target
 from .Map import Map
 from .Player import Player
+from .WeaponDrop import WeaponDrop
 
 from .constants import Colors
 
@@ -24,6 +25,8 @@ class BlocktanksGame:
     BULLET_SPAWN_SPEED = 10 #100#30#15#10
 
     TARGET_SPAWN_SPEED = 100 #1
+
+    WEAPON_DROP_SPAWN_SPEED = 20
 
     PLAYER_BULLET_SPAWN_SPEED = 0
 
@@ -54,12 +57,18 @@ class BlocktanksGame:
 
         self.player = Player(self.map)
 
+        # Resetting Bullets
         self.bullets = []
         self.spawnBulletCooldown = BlocktanksGame.BULLET_SPAWN_SPEED
         self.playerBulletCooldown = BlocktanksGame.PLAYER_BULLET_SPAWN_SPEED
 
+        # Resetting Targets
         self.targets = []
         self.spawnTargetCooldown = BlocktanksGame.TARGET_SPAWN_SPEED
+
+        # Resetting Weapon Drops
+        self.weapon_drops = []
+        self.spawnWeaponDropCooldown = BlocktanksGame.WEAPON_DROP_SPAWN_SPEED
 
     def step(self, inputs):
         events = set()
@@ -76,18 +85,22 @@ class BlocktanksGame:
 
         self.player.update(inputs)
 
+        # Bullet Updating
         for bullet in self.bullets:
             bullet.update()
 
         self.bullets = [ bullet for bullet in self.bullets if bullet.despawnTime > 0 ]
         self.player_bullets = [bullet for bullet in self.bullets if bullet.team == "blue"]
 
+        # Bullet Spawning
         self.spawnBulletCooldown -= 1
         if self.spawnBulletCooldown < 0:
-            self.spawnBulletCooldown = BlocktanksGame.BULLET_SPAWN_SPEED - round(min(self.timeSteps/1000, 1) * 7)
+            pass
+            #self.spawnBulletCooldown = BlocktanksGame.BULLET_SPAWN_SPEED - round(min(self.timeSteps/1000, 1) * 7)
 
-            self.bullets.append(Bullet.spawnRandomBullet((self.player.x, self.player.y), 200, 250, math.pi/4, "red", self.map))
+            #self.bullets.append(Bullet.spawnRandomBullet((self.player.x, self.player.y), 200, 250, math.pi/4, "red", self.map))
 
+        # Target Updating
         for target in self.targets:
             target.update()
 
@@ -101,6 +114,17 @@ class BlocktanksGame:
         # I'm trying this code out -> Spawns Target if none exist
         if not self.targets:
             self.targets.append(Target.spawnRandomTarget((self.player.x, self.player.y), 200, 750, self.map))
+
+        # Weapon Drop Updating
+        for weapon_drop in self.weapon_drops:
+            weapon_drop.update() #Useless for the time being but maybe useful later for despawning if we need that?
+
+        # Weapon Drop Spawning
+        self.spawnWeaponDropCooldown -= 1
+        if self.spawnWeaponDropCooldown < 0:
+            self.spawnWeaponDropCooldown = BlocktanksGame.WEAPON_DROP_SPAWN_SPEED
+
+            self.weapon_drops.append(WeaponDrop.spawnRandomWeaponDrop(self.map))
 
         # Adding Player Bullets
         self.playerBulletCooldown -= 1
@@ -117,6 +141,7 @@ class BlocktanksGame:
         self.window_surface.blit(self.background, (0, 0))
         #self.window_surface.blit(bg, (-500 - cameraPos[0], -500 - cameraPos[1]))
 
+        # Drawing
         self.map.draw(self.window_surface, cameraPos)
 
         self.player.draw(self.window_surface, cameraPos)
@@ -126,6 +151,9 @@ class BlocktanksGame:
 
         for target in self.targets:
             target.draw(self.window_surface, cameraPos)
+
+        for weapon_drop in self.weapon_drops:
+            weapon_drop.draw(self.window_surface, cameraPos)
 
         # Bullet Collision With Player
         colliding_player = False
@@ -159,13 +187,39 @@ class BlocktanksGame:
             else: # Stackoverflow Code for breaking out of Outer Loop
                 continue
             break
+        
+        # Collision with Weapon Drops
+        colliding_weapon_drop = False
 
+        for weapon_drop in self.weapon_drops: 
+            #Should we refactor later
+            weapon_drop_hitbox = pygame.Rect(
+                weapon_drop.x - cameraPos[0] - WeaponDrop.SIZE/2, 
+                weapon_drop.y - cameraPos[1] - WeaponDrop.SIZE/2,
+                WeaponDrop.SIZE,
+                WeaponDrop.SIZE
+            )
+            player_hitbox = pygame.Rect(
+                self.player.x - cameraPos[0] - Player.SIZE/2, 
+                self.player.y - cameraPos[1] - Player.SIZE/2,
+                Player.SIZE,
+                Player.SIZE
+            )
+
+            if (weapon_drop_hitbox.colliderect(player_hitbox)):
+                self.weapon_drops.remove(weapon_drop)
+                colliding_weapon_drop = True
+
+        #Reward Handling
 
         if colliding_target:
             events.add("KILL")
         
         if self.player.isShooting:
             events.add("SHOOTING")
+
+        if colliding_weapon_drop:
+            events.add("WEAPON")
 
         return self.window_surface, events
 
