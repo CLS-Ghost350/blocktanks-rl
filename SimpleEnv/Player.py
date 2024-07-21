@@ -7,10 +7,12 @@ from .constants import Colors
 
 class Player:
     SIZE = 50
+    ARM_SIZE = 60
     SPEED = 8#4
 
     def __init__(self, map:Map):
         self.map = map
+        self.arm_image = pygame.transform.scale(pygame.image.load('./SimpleEnv/Resources/arm.png'), (self.SIZE, self.SIZE))
         self.x = 1050
         self.y = 1050
 

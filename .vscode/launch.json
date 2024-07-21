@@ -8,7 +8,7 @@
             "name": "Frank End: train2.py",
             "type": "python",
             "request": "launch",
-            "program": "C:\\Users\\frank\\OneDrive\\Documents\\Coding-Projects\\blocktanks-rl\\train2.py",
+            "program": "C:\\Users\\frank\\OneDrive\\Documents\\Coding-Projects\\blocktanks-rl\\train.py",
             "console": "integratedTerminal",
             "justMyCode": true
         },
@@ -24,7 +24,7 @@
             "name": "Python: train.py",
             "type": "python",
             "request": "launch",
-            "program": "C:\\Users\\jenni\\Desktop\\Desktop_Files\\Python\\MachineLearning\\BlocktanksSimpleRL\\train.py",
+            "program": "C:\\Users\\jenni\\Desktop\\Desktop_Files\\Python\\MachineLearning\\BlocktanksSimpleRL\\train2.py",
             "console": "integratedTerminal",
             "justMyCode": true
         },

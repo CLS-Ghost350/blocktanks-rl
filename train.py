@@ -30,5 +30,5 @@ if __name__ == "__main__":
 
     model = MultiOutputPPO("MultiOutputPolicy", env, verbose=1, tensorboard_log=log_path, learning_rate=lambda amountLeft: 0.0004 * amountLeft**2)#, learning_rate=0.5)#, n_steps=3500)
 
-    model.learn(total_timesteps=1.75*1000*1000)#1000)#1.75*1000*1000) #log_interval=100)
+    model.learn(total_timesteps=1000)#)1.75*1000*1000)#1000)#1.75*1000*1000) #log_interval=100)
     model.save(model_path)

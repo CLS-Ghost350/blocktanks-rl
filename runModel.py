@@ -10,7 +10,7 @@ from pygame import mouse
 
 from BlocktanksEnv import BlocktanksEnv, BlocktanksGame
 
-manual = True
+manual = False
 
 env = BlocktanksEnv(render=True,seed=2)
 
@@ -39,7 +39,7 @@ for episode in range(1, episodes + 1):
 
         if not manual:
             action, _states = model.predict(obs)
-            print(action)
+            print("ACTION",  action)
 
         else:
             # Key Actions
