@@ -32,7 +32,7 @@ class WeaponDrop:
         self.y = y
 
         self.type = random.choice(self.TYPES)
-        self.image = pygame.transform.scale(pygame.image.load('./SimpleEnv/Resources/'+self.type + '.png'), (self.SIZE, self.SIZE))
+        self.image = pygame.transform.scale(pygame.image.load('./SimpleEnv/Resources/'+ self.type + '.png'), (self.SIZE, self.SIZE))
         
         #Hitbox rect
         
