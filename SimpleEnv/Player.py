@@ -1,4 +1,4 @@
-import pygame
+import pygame, math
 
 from .Map import Map
 from .Bullet import Bullet
@@ -7,14 +7,16 @@ from .constants import Colors
 
 class Player:
     SIZE = 50
-    ARM_SIZE = 60
+    ARM_SIZE = 80
     SPEED = 8#4
+    ORIGINAL_ARM_IMAGE = pygame.transform.scale(pygame.image.load('./SimpleEnv/Resources/arm.png'), (ARM_SIZE, ARM_SIZE))
 
     def __init__(self, map:Map):
         self.map = map
-        self.arm_image = pygame.transform.scale(pygame.image.load('./SimpleEnv/Resources/arm.png'), (self.SIZE, self.SIZE))
+        self.arm_image = Player.ORIGINAL_ARM_IMAGE
         self.x = 1050
         self.y = 1050
+        self.crop = ()
 
     def update(self, inputs):
         # Movement
@@ -72,9 +74,17 @@ class Player:
         self.isShooting = inputs["keys"][2]
         self.angle = inputs["angle"]
 
+        # Updating Arm Angle
+        self.arm_image = pygame.transform.rotate(Player.ORIGINAL_ARM_IMAGE, math.degrees(-self.angle) - 90)
+
+        #Calculation Crop
+        image_size = self.arm_image.get_width()
+        self.crop = ((image_size - Player.ARM_SIZE)/2, (image_size - Player.ARM_SIZE)/2, Player.ARM_SIZE, Player.ARM_SIZE)
+
     def draw(self, surface:pygame.Surface, cameraPos:tuple):
         pygame.draw.rect(surface, Colors.BLUE, pygame.Rect(
             self.x - cameraPos[0] - Player.SIZE/2, self.y - cameraPos[1] - Player.SIZE/2,
             Player.SIZE,
             Player.SIZE
         ))
+        surface.blit(self.arm_image, (self.x - cameraPos[0] - Player.ARM_SIZE/2, self.y - cameraPos[1] - Player.ARM_SIZE/2), )
