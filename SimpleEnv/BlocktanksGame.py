@@ -32,8 +32,8 @@ class BlocktanksGame:
 
     def __init__(self, **kwargs): 
         self.doRender = kwargs.get("render", False)
-        self._seed = kwargs.get("seed", 69)
 
+        self._seed = kwargs.get("seed", random.random())
         random.seed(self._seed)
 
         pygame.display.set_caption("Game View")
@@ -51,11 +51,15 @@ class BlocktanksGame:
         self.map = Map.fromFile(os.path.join(os.path.dirname(__file__), "map.map"))
 
     def reset(self, seed=None):
-        #random.seed(seed or self._seed)
+        #random.seed(seed or self._seed) ONLY SEED WHEN ENV CREATED
 
         self.timeSteps = 0
 
         self.player = Player(self.map)
+
+        playerSpawn = Player.get_random_spawn(1050, 1050, 1950, 1850, self.map)
+        self.player.x = playerSpawn[0]
+        self.player.y = playerSpawn[1]
 
         # Resetting Bullets
         self.bullets = []

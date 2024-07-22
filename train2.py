@@ -28,9 +28,10 @@ ENVS_NUM = 6
 
 N_STEPS = 640
 
-STEPS_PER_SAVE = N_STEPS * ENVS_NUM * 4 + 1
+STEPS_PER_SAVE = N_STEPS * ENVS_NUM * 16 + 1
 
-TOTAL_TIMESTEPS = int(100 / STEPS_PER_SAVE) * STEPS_PER_SAVE + 1
+TOTAL_TIMESTEPS = 2.5 * 1000 * 1000
+TOTAL_TIMESTEPS = int(TOTAL_TIMESTEPS / STEPS_PER_SAVE) * STEPS_PER_SAVE + 1
 
 # fps around 18 per env (108 total)
 
@@ -38,12 +39,12 @@ if __name__ == "__main__":
     #env = BlocktanksEnv()
     env = SubprocVecEnv([ create_env(seed) for seed in range(ENVS_NUM) ])
 
-    model = PPO("CnnPolicy", env, verbose=1, n_steps=N_STEPS, tensorboard_log=log_path, learning_rate=lambda amountLeft: 0.0004 * amountLeft**2)
+    model = PPO("CnnPolicy", env, verbose=1, n_steps=N_STEPS, tensorboard_log=log_path, learning_rate=0.0001)#lambda amountLeft: 0.0004 * amountLeft**2)
 
     SAVES = int(TOTAL_TIMESTEPS / STEPS_PER_SAVE)
     print("SAVES:", SAVES)
 
     for i in range(SAVES):
-        model.learn(total_timesteps=STEPS_PER_SAVE, log_interval=1)#1.75*1000*1000) #log_interval=100)
+        model.learn(total_timesteps=STEPS_PER_SAVE, log_interval=4)#1.75*1000*1000) #log_interval=100)
         model.save(model_path)
         print("Saved", i)

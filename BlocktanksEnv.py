@@ -18,7 +18,7 @@ class BlocktanksEnv(Env):
 
     ALIVE_REWARD = 0
     KILL_REWARD = 20
-    WEAPON_PICKUP_REWARD = 1
+    WEAPON_PICKUP_REWARD = 2
 
     DEATH_PENALTY = -40
     SHOOTING_PENALTY = -1
