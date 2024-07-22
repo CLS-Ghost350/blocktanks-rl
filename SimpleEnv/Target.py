@@ -104,3 +104,4 @@ class Target(Player):
             Player.SIZE,
             Player.SIZE
         ))
+        surface.blit(Player.ORIGINAL_ARM_IMAGE, (self.x - cameraPos[0] - Player.ARM_SIZE/2, self.y - cameraPos[1] - Player.ARM_SIZE/2))

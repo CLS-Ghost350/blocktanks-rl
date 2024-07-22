@@ -1,5 +1,6 @@
 import pygame, math
 
+from .Utils import Utils
 from .Map import Map
 from .Bullet import Bullet
 
@@ -75,11 +76,7 @@ class Player:
         self.angle = inputs["angle"]
 
         # Updating Arm Angle
-        self.arm_image = pygame.transform.rotate(Player.ORIGINAL_ARM_IMAGE, math.degrees(-self.angle) - 90)
-
-        #Calculation Crop
-        image_size = self.arm_image.get_width()
-        self.crop = ((image_size - Player.ARM_SIZE)/2, (image_size - Player.ARM_SIZE)/2, Player.ARM_SIZE, Player.ARM_SIZE)
+        self.arm_image = Utils.rotate_center(Player.ORIGINAL_ARM_IMAGE, math.degrees(-self.angle) - 90, self.x, self.y)
 
     def draw(self, surface:pygame.Surface, cameraPos:tuple):
         pygame.draw.rect(surface, Colors.BLUE, pygame.Rect(
@@ -87,4 +84,5 @@ class Player:
             Player.SIZE,
             Player.SIZE
         ))
-        surface.blit(self.arm_image, (self.x - cameraPos[0] - Player.ARM_SIZE/2, self.y - cameraPos[1] - Player.ARM_SIZE/2), )
+        # Blitting with camera offset
+        surface.blit(self.arm_image[0], self.arm_image[1].move(-cameraPos[0], -cameraPos[1]))

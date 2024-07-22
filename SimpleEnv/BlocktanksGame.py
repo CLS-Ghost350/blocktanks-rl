@@ -143,10 +143,10 @@ class BlocktanksGame:
         # Drawing
         self.map.draw(self.window_surface, cameraPos)
 
-        self.player.draw(self.window_surface, cameraPos)
-
         for bullet in self.bullets:
             bullet.draw(self.window_surface, cameraPos)
+            
+        self.player.draw(self.window_surface, cameraPos)
 
         for target in self.targets:
             target.draw(self.window_surface, cameraPos)
