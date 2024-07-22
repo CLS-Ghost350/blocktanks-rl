@@ -14,14 +14,16 @@ import cv2
 
 class BlocktanksEnv(Env):
     ANGLES = 24
+    FRAMES_STACKED = 4 # either 3 (RGB) or 4 (RGBA); order from oldest to newest: BGRA
 
-    DEATH_PENALTY = -30
     ALIVE_REWARD = 0
     KILL_REWARD = 20
-    SHOOTING_PENALTY = -1
     WEAPON_PICKUP_REWARD = 1
 
-    MAX_REWARD = max(max(-DEATH_PENALTY, -(SHOOTING_PENALTY)), ALIVE_REWARD + KILL_REWARD )
+    DEATH_PENALTY = -40
+    SHOOTING_PENALTY = -1
+
+    MAX_REWARD = max(max(-DEATH_PENALTY, -(SHOOTING_PENALTY)), ALIVE_REWARD + KILL_REWARD + WEAPON_PICKUP_REWARD)
 
     instances = 0
 
@@ -30,7 +32,7 @@ class BlocktanksEnv(Env):
         print(BlocktanksEnv.instances)
 
         self.action_space = MultiDiscrete([3, 3, 2, BlocktanksEnv.ANGLES]) # x-move, y-move, shoot (TODO: add powerups to this), angle
-        self.observation_space = Box(0, 255, (165, 316, 3), np.uint8)
+        self.observation_space = Box(0, 255, (165, 316, 4), np.uint8)
 
         #self.n_steps = kwargs.get("n_steps", None)
 
@@ -44,9 +46,9 @@ class BlocktanksEnv(Env):
     def reset(self, *, seed=None, options=None) :
         self.game.reset(seed=seed)
 
-        self.obs_frames = deque([ np.zeros((316, 165)), np.zeros((316, 165)), np.zeros((316, 165)) ], maxlen=3)
+        self.obs_frames = deque([ np.zeros((316, 165)) for i in range(BlocktanksEnv.FRAMES_STACKED) ], maxlen=BlocktanksEnv.FRAMES_STACKED)
         #self.obs_frames = deque([ np.zeros(BlocktanksEnv.WINDOW_SIZE), np.zeros(BlocktanksEnv.WINDOW_SIZE), np.zeros(BlocktanksEnv.WINDOW_SIZE) ], maxlen=3)
-        self.past_positions = deque([(0,0), (0,0), (0,0)], maxlen=3)
+        self.past_positions = deque([(0,0) for i in range(BlocktanksEnv.FRAMES_STACKED) ], maxlen=BlocktanksEnv.FRAMES_STACKED)
 
         return self.get_obs(), {}
 
@@ -62,6 +64,7 @@ class BlocktanksEnv(Env):
 
         if self.render:
             cv2.imshow("AI View", curObs)
+            #cv2.imwrite("obs.png", curObs)
 
         # Reward Handling
         if "DEATH" in events:
