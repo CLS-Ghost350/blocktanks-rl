@@ -71,7 +71,12 @@ class BlocktanksGame:
         self.spawnWeaponDropCooldown = BlocktanksGame.WEAPON_DROP_SPAWN_SPEED
 
     def step(self, inputs):
+        # Output
         events = set()
+
+        # Shaped rewards
+        shooting_distance = []
+        dodging_distance = []
 
         if self.doRender:
             for event in pygame.event.get():
@@ -159,7 +164,12 @@ class BlocktanksGame:
 
         for bullet in self.bullets:
             if (bullet.team == "blue"): continue
-
+            
+            # Calculating Dodging Distance
+            dodging_distance.append(circleRectDistance(bullet.x, bullet.y, Bullet.RADIUS, 
+                self.player.x - Player.SIZE/2, self.player.y - Player.SIZE/2,
+                Player.SIZE, Player.SIZE))
+            
             if circleRect(bullet.x, bullet.y, Bullet.RADIUS, 
                 self.player.x - Player.SIZE/2, self.player.y - Player.SIZE/2,
                 Player.SIZE, Player.SIZE):
@@ -167,15 +177,19 @@ class BlocktanksGame:
                 colliding_player = True
                 break
 
-            
         if colliding_player:
-            return self.window_surface, { "DEATH" }
+            return self.window_surface, { "DEATH" }, shooting_distance, dodging_distance
         
         # Collision With Targets
         colliding_target = False
 
         for bullet in self.player_bullets:
             for target in self.targets:
+                #Calculating Closest Shooting distance
+                shooting_distance.append(circleRectDistance(bullet.x, bullet.y, Bullet.RADIUS, target.x - Player.SIZE/2, target.y - Player.SIZE/2, 
+                    Player.SIZE, Player.SIZE))
+                
+
                 if circleRect(bullet.x, bullet.y, Bullet.RADIUS, 
                     target.x - Player.SIZE/2, target.y - Player.SIZE/2, 
                     Player.SIZE, Player.SIZE):
@@ -220,7 +234,7 @@ class BlocktanksGame:
         if colliding_weapon_drop:
             events.add("WEAPON")
 
-        return self.window_surface, events
+        return self.window_surface, events, shooting_distance, dodging_distance
 
     def render(self):
         pass
@@ -247,5 +261,26 @@ def circleRect(cx:float, cy:float, radius:float, rx:float, ry:float, rw:float, r
     return True
   
   return False
+
+#Need to use this for shaped rewards
+def circleRectDistance(cx:float, cy:float, radius:float, rx:float, ry:float, rw:float, rh:float):
+
+  # temporary variables to set edges for testing
+  testX = cx
+  testY = cy
+
+  # which edge is closest?
+  if cx < rx:      testX = rx;      # test left edge
+  elif cx > rx+rw: testX = rx+rw;   # right edge
+  if cy < ry:      testY = ry;      # top edge
+  elif cy > ry+rh: testY = ry+rh;   # bottom edge
+
+  # get distance from closest edges
+  distX = cx-testX
+  distY = cy-testY
+  distance = math.sqrt( (distX*distX) + (distY*distY) )
+
+  # if the distance is less than the radius, collision!
+  return distance
 
 
