@@ -10,9 +10,9 @@ from pygame import mouse
 
 from BlocktanksEnv import BlocktanksEnv, BlocktanksGame
 
-manual = True
+manual = False
 
-env = BlocktanksEnv(render=True,seed=2)
+env = BlocktanksEnv(render=True)
 
 if not manual:
     model_path = os.path.abspath(os.path.join("Training", "SavedModels", "A"))

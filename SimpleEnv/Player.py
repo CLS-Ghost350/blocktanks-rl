@@ -1,4 +1,4 @@
-import pygame, math
+import pygame, math, random
 
 from .Utils import Utils
 from .Map import Map
@@ -11,6 +11,35 @@ class Player:
     ARM_SIZE = 80
     SPEED = 8#4
     ORIGINAL_ARM_IMAGE = pygame.transform.scale(pygame.image.load('./SimpleEnv/Resources/arm.png'), (ARM_SIZE, ARM_SIZE))
+
+    @staticmethod
+    def get_random_spawn(boundLeft, boundTop, boundRight, boundBottom, map:Map): 
+        colliding = True
+        i = 0
+
+        while colliding and i < 20:
+            i += 1
+
+            x = random.uniform(boundLeft, boundRight)
+            y = random.uniform(boundTop, boundBottom)
+
+
+            left = x - Player.SIZE/2
+            top = y - Player.SIZE/2
+
+            colliding = False
+
+            tileTR = int(top // Map.TILE_SIZE)
+            tileLC = int(left // Map.TILE_SIZE)
+    
+            for r in range(tileTR, tileTR + 2): 
+                for c in range(tileLC, tileLC + 2):
+                    if map.tiles[r][c] == "w" or map.tiles[r][c] == "o":
+                        if pygame.Rect.colliderect(map.getTileRect(r, c), pygame.Rect(left, top, Player.SIZE, Player.SIZE)):
+                            colliding =True
+                            #print("coll", map.getTileRect(r, c))
+                            break
+        return (1050, 1050) if colliding else (x, y)
 
     def __init__(self, map:Map):
         self.map = map
