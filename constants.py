@@ -1,5 +1,5 @@
 class HyperParameters:
-    N_STEPS = 640
+    N_STEPS = 128
     LEARNING_RATE = lambda amountLeft: 0.0004 * amountLeft**2
 
 class LearningParameters:

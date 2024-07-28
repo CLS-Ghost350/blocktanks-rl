@@ -1,0 +1,9 @@
+gymnasium==1.0.0a2
+gymnasium==0.29.1
+keyboard==0.13.5
+numpy==1.24.2
+opencv_python==4.6.0.66
+opencv_python==4.10.0.84
+pygame==2.1.2
+pygame==2.6.0
+stable_baselines3==2.3.2
