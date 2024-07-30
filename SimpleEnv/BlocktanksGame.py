@@ -108,9 +108,9 @@ class BlocktanksGame:
 
             self.bullets.append(Bullet.spawnRandomBullet((self.player.x, self.player.y), 200, 250, math.pi/4, "red", self.map))
 
-        # Target Updating
-        for target in self.targets:
-            target.update()
+        # Target Updating Removed Now For Simplification
+        #for target in self.targets:
+        #    target.update()
 
         # Target Spawning
         self.spawnTargetCooldown -= 1

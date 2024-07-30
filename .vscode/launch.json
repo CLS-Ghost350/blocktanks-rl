@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Frank End: train2.py",
+            "name": "Frank End: train.py",
             "type": "python",
             "request": "launch",
             "program": "C:\\Users\\frank\\OneDrive\\Documents\\Coding-Projects\\blocktanks-rl\\train.py",
