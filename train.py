@@ -42,12 +42,14 @@ if __name__ == "__main__":
         verbose=1, 
         tensorboard_log=log_path, 
         learning_rate=Hp.LEARNING_RATE,
-        n_steps=Hp.N_STEPS
+        n_steps=Hp.N_STEPS,
+        gamma=Hp.GAMMA
     )
 
     model.learn(
         log_interval=2,
-        total_timesteps=Lp.TOTAL_TIMESTEPS
+        total_timesteps=Lp.TOTAL_TIMESTEPS,
+        callback=checkpoint_callback
     )
 
 

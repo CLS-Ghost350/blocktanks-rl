@@ -27,6 +27,8 @@ class BlocktanksEnv(Env):
     MAX_DODGING_SHAPED_REWARD = 0#350
     MAX_REWARD = max(max(-DEATH_PENALTY, -(SHOOTING_PENALTY)), ALIVE_REWARD + KILL_REWARD + WEAPON_PICKUP_REWARD)
 
+    EPISODE_STEPS_LIMIT = 300
+
     instances = 0
 
     def __init__(self, **kwargs): 
@@ -52,9 +54,13 @@ class BlocktanksEnv(Env):
         #self.obs_frames = deque([ np.zeros(BlocktanksEnv.WINDOW_SIZE), np.zeros(BlocktanksEnv.WINDOW_SIZE), np.zeros(BlocktanksEnv.WINDOW_SIZE) ], maxlen=3)
         self.past_positions = deque([(0,0) for i in range(BlocktanksEnv.FRAMES_STACKED) ], maxlen=BlocktanksEnv.FRAMES_STACKED)
 
+        self.episode_steps = 0
+
         return self.get_obs(), {}
 
     def step(self, action: MultiDiscrete):
+        self.episode_steps += 1
+
         inputs = { "keys": action[0:3], "angle": action[3] / BlocktanksEnv.ANGLES * 2*math.pi }
 
         (surface, events, shooting_distance, dodging_distance) = self.game.step(inputs)
@@ -96,7 +102,7 @@ class BlocktanksEnv(Env):
         #    reward += dodging_shaped_reward
         #    #print("DODGING SHAPED REWARD", dodging_shaped_reward)
 
-        return curObs, reward / BlocktanksEnv.MAX_REWARD, False, False, {}
+        return curObs, reward / BlocktanksEnv.MAX_REWARD, False, self.episode_steps >= BlocktanksEnv.EPISODE_STEPS_LIMIT, {}
 
     @staticmethod
     def get_obs_frame(surface: pygame.Surface): # no way of knowing past actions, which skew past frames

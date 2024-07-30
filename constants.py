@@ -1,8 +1,8 @@
 class HyperParameters:
-    N_STEPS = 128
-    LEARNING_RATE = lambda amountLeft: 0.0004 * amountLeft**2
+    N_STEPS = 2048
+    LEARNING_RATE = 0.0003#lambda amountLeft: 0.0004 * amountLeft**2
 
-    #GAMMA = 
+    GAMMA = 0.99
 
 class LearningParameters:
     TOTAL_TIMESTEPS = 60 * 1000 # fps around 18 per env (108 total)
