@@ -6,7 +6,7 @@ from .constants import Colors
 class Bullet:
     RADIUS = 7
     HITBOX_SIZE = 11
-    SPEED = 16#8
+    SPEED = 64#8
 
     @classmethod
     def spawnRandomBullet(cls, playerPos:tuple, minDist:float, maxDist:float, angleDeviation:float, team:str, map:Map):

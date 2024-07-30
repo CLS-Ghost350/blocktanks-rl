@@ -27,6 +27,7 @@ class BlocktanksGame:
     TARGET_SPAWN_SPEED = 100 #1
 
     WEAPON_DROP_SPAWN_SPEED = 20
+    WEAPON_DROP_MAX = 20
 
     PLAYER_BULLET_SPAWN_SPEED = 0
 
@@ -51,7 +52,7 @@ class BlocktanksGame:
         self.map = Map.fromFile(os.path.join(os.path.dirname(__file__), "map.map"))
 
     def reset(self, seed=None):
-        #random.seed(seed or self._seed) ONLY SEED WHEN ENV CREATED
+        # random.seed(seed or self._seed) ONLY SEED WHEN ENV CREATED
 
         self.timeSteps = 0
 
@@ -102,11 +103,11 @@ class BlocktanksGame:
         self.player_bullets = [bullet for bullet in self.bullets if bullet.team == "blue"]
 
         # Bullet Spawning
-        self.spawnBulletCooldown -= 1
-        if self.spawnBulletCooldown < 0:
-            self.spawnBulletCooldown = BlocktanksGame.BULLET_SPAWN_SPEED - round(min(self.timeSteps/1000, 1) * 7)
+        # self.spawnBulletCooldown -= 1
+        # if self.spawnBulletCooldown < 0:
+        #     self.spawnBulletCooldown = BlocktanksGame.BULLET_SPAWN_SPEED - round(min(self.timeSteps/1000, 1) * 7)
 
-            self.bullets.append(Bullet.spawnRandomBullet((self.player.x, self.player.y), 200, 250, math.pi/4, "red", self.map))
+        #     self.bullets.append(Bullet.spawnRandomBullet((self.player.x, self.player.y), 200, 250, math.pi/4, "red", self.map))
 
         # Target Updating Removed Now For Simplification
         #for target in self.targets:
@@ -129,7 +130,7 @@ class BlocktanksGame:
 
         # Weapon Drop Spawning
         self.spawnWeaponDropCooldown -= 1
-        if self.spawnWeaponDropCooldown < 0:
+        if self.spawnWeaponDropCooldown < 0 and len(self.weapon_drops) < BlocktanksGame.WEAPON_DROP_MAX:
             self.spawnWeaponDropCooldown = BlocktanksGame.WEAPON_DROP_SPAWN_SPEED
 
             self.weapon_drops.append(WeaponDrop.spawnRandomWeaponDrop(self.map))
