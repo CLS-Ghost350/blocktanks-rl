@@ -10,7 +10,7 @@ from pygame import mouse
 
 from BlocktanksEnv import BlocktanksEnv, BlocktanksGame
 
-manual = True
+manual = False
 
 env = BlocktanksEnv(render=True)
 

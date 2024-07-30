@@ -23,9 +23,9 @@ class BlocktanksEnv(Env):
     DEATH_PENALTY = -40
     SHOOTING_PENALTY = -1
 
-    MAX_SHOOTING_SHAPED_REWARD = 1000/10000
-    MAX_DODGING_SHAPED_REWARD = 350/3500
-    MAX_REWARD = max(max(-DEATH_PENALTY, -(SHOOTING_PENALTY)), ALIVE_REWARD + KILL_REWARD + WEAPON_PICKUP_REWARD + MAX_SHOOTING_SHAPED_REWARD + MAX_DODGING_SHAPED_REWARD)
+    MAX_SHOOTING_SHAPED_REWARD = 1000
+    MAX_DODGING_SHAPED_REWARD = 0#350
+    MAX_REWARD = max(max(-DEATH_PENALTY, -(SHOOTING_PENALTY)), ALIVE_REWARD + KILL_REWARD + WEAPON_PICKUP_REWARD)
 
     instances = 0
 
@@ -85,17 +85,16 @@ class BlocktanksEnv(Env):
 
         # Shaped Reward Handling
         # Shooting Shaped Rewards
-        if (shooting_distance):
-            sorted(shooting_distance)
-            shooting_shaped_reward = max(0, 1000-shooting_distance[0]) / 10000 #I'm not sure what's a good value to give
-            reward += shooting_shaped_reward
-            #print("SHOOTING SHAPED REWARD", shooting_shaped_reward)
+        #if (shooting_distance):
+        #    shooting_shaped_reward = max(0, 1000 - min(shooting_distance[0])) / 10000 #I'm not sure what's a good value to give
+        #    reward += shooting_shaped_reward
+        #    #print("SHOOTING SHAPED REWARD", shooting_shaped_reward)
 
-        if (dodging_distance):
-            sorted(dodging_distance)
-            dodging_shaped_reward = max(350, dodging_distance[0]) / 3500
-            reward += dodging_shaped_reward
-            #print("DODGING SHAPED REWARD", dodging_shaped_reward)
+        #if (dodging_distance):
+        #    sorted(dodging_distance)
+        #    dodging_shaped_reward = max(B, dodging_distance[0]) / 3500
+        #    reward += dodging_shaped_reward
+        #    #print("DODGING SHAPED REWARD", dodging_shaped_reward)
 
         return curObs, reward / BlocktanksEnv.MAX_REWARD, False, False, {}
 
