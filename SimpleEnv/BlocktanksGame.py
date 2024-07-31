@@ -114,11 +114,11 @@ class BlocktanksGame:
         #    target.update()
 
         # Target Spawning
-        self.spawnTargetCooldown -= 1
-        if self.spawnTargetCooldown < 0:
-            self.spawnTargetCooldown = BlocktanksGame.TARGET_SPAWN_SPEED
-            
-            self.targets.append(Target.spawnRandomTarget((self.player.x, self.player.y), 200, 750, self.map))
+        #self.spawnTargetCooldown -= 1
+        #if self.spawnTargetCooldown < 0:
+        #    self.spawnTargetCooldown = BlocktanksGame.TARGET_SPAWN_SPEED
+        #    
+        #    self.targets.append(Target.spawnRandomTarget((self.player.x, self.player.y), 200, 750, self.map))
 
         # I'm trying this code out -> Spawns Target if none exist
         if not self.targets:
@@ -144,6 +144,7 @@ class BlocktanksGame:
                 #print(self.player.angle)
                 #print("SHOOTING")
                 self.bullets.append(Bullet(self.player.x, self.player.y, inputs["angle"], "blue", self.map))
+                events.add("SHOOTING")
 
         cameraPos = (self.player.x - BlocktanksGame.WINDOW_SIZE[0]/2, self.player.y - BlocktanksGame.WINDOW_SIZE[1]/2)
 
@@ -232,9 +233,6 @@ class BlocktanksGame:
 
         if colliding_target:
             events.add("KILL")
-        
-        if self.player.isShooting:
-            events.add("SHOOTING")
 
         if colliding_weapon_drop:
             events.add("WEAPON")

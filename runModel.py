@@ -15,7 +15,7 @@ manual = False
 env = BlocktanksEnv(render=True)
 
 if not manual:
-    model_path = os.path.abspath(os.path.join("Training", "SavedModels", "A"))
+    model_path = os.path.abspath(os.path.join("Training", "SavedModels", "rl_model_180000_steps")) #"final"))
     #model_path = os.path.abspath(os.path.join("Models", "PPO1"))
 
     #env = DummyVecEnv([ lambda: env ])
@@ -33,6 +33,7 @@ for episode in range(1, episodes + 1):
     done = False
 
     steps = 0
+    totalReward = 0
 
     while not done:
         #env.render()
@@ -71,6 +72,11 @@ for episode in range(1, episodes + 1):
 
         obs, reward, terminated, truncated, info = env.step(action)
 
+        #if reward != 0:
+        #print(reward)
+
+        totalReward += reward
+
         done = terminated or truncated
 
         #cv2.imshow("AI View", obs)
@@ -78,3 +84,5 @@ for episode in range(1, episodes + 1):
 
         steps += 1
         #print(steps) # around 100-200 steps per episode
+
+    print("total reward:", totalReward)

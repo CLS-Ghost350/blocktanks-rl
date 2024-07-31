@@ -17,17 +17,18 @@ class BlocktanksEnv(Env):
     FRAMES_STACKED = 4 # either 3 (RGB) or 4 (RGBA); order from oldest to newest: BGRA
 
     ALIVE_REWARD = 0
-    KILL_REWARD = 20
-    WEAPON_PICKUP_REWARD = 2
+    KILL_REWARD = 1
+    WEAPON_PICKUP_REWARD = 0.5
 
-    DEATH_PENALTY = -40
-    SHOOTING_PENALTY = -1
+    DEATH_PENALTY = -2
+    SHOOTING_PENALTY = -0.02
 
-    MAX_SHOOTING_SHAPED_REWARD = 1000
-    MAX_DODGING_SHAPED_REWARD = 0#350
-    MAX_REWARD = max(max(-DEATH_PENALTY, -(SHOOTING_PENALTY)), ALIVE_REWARD + KILL_REWARD + WEAPON_PICKUP_REWARD)
+    #MAX_SHOOTING_SHAPED_REWARD = 1000
+    #MAX_DODGING_SHAPED_REWARD = 0#350
 
-    EPISODE_STEPS_LIMIT = 300
+    #MAX_REWARD = max(-(DEATH_PENALTY + SHOOTING_PENALTY), ALIVE_REWARD + KILL_REWARD + WEAPON_PICKUP_REWARD)
+
+    EPISODE_STEPS_LIMIT = 256
 
     instances = 0
 
@@ -48,6 +49,8 @@ class BlocktanksEnv(Env):
         pass
 
     def reset(self, *, seed=None, options=None) :
+        #print("reset")
+
         self.game.reset(seed=seed)
 
         self.obs_frames = deque([ np.zeros((316, 165)) for i in range(BlocktanksEnv.FRAMES_STACKED) ], maxlen=BlocktanksEnv.FRAMES_STACKED)
@@ -59,6 +62,8 @@ class BlocktanksEnv(Env):
         return self.get_obs(), {}
 
     def step(self, action: MultiDiscrete):
+        #print("step")
+
         self.episode_steps += 1
 
         inputs = { "keys": action[0:3], "angle": action[3] / BlocktanksEnv.ANGLES * 2*math.pi }
@@ -75,10 +80,13 @@ class BlocktanksEnv(Env):
             #cv2.imwrite("obs.png", curObs)
 
         # Reward Handling
-        if "DEATH" in events:
-            return curObs, BlocktanksEnv.DEATH_PENALTY / BlocktanksEnv.MAX_REWARD, True, False, {}
-
         reward = BlocktanksEnv.ALIVE_REWARD
+        terminated = False
+        truncated = False
+
+        if "DEATH" in events:
+            reward += BlocktanksEnv.DEATH_PENALTY
+            terminated = True
 
         if "KILL" in events:
             reward += BlocktanksEnv.KILL_REWARD
@@ -102,7 +110,10 @@ class BlocktanksEnv(Env):
         #    reward += dodging_shaped_reward
         #    #print("DODGING SHAPED REWARD", dodging_shaped_reward)
 
-        return curObs, reward / BlocktanksEnv.MAX_REWARD, False, self.episode_steps >= BlocktanksEnv.EPISODE_STEPS_LIMIT, {}
+        truncated = self.episode_steps >= BlocktanksEnv.EPISODE_STEPS_LIMIT
+
+        #return curObs, reward / BlocktanksEnv.MAX_REWARD, terminated, truncated, {}
+        return curObs, reward, terminated, truncated, {}
 
     @staticmethod
     def get_obs_frame(surface: pygame.Surface): # no way of knowing past actions, which skew past frames
